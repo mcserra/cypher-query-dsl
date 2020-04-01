@@ -9,7 +9,7 @@ import com.dsl.expressions.param.As;
 import com.dsl.expressions.param.FinalExpression;
 import com.dsl.expressions.param.Literal;
 import com.dsl.expressions.param.SelectorExpression;
-import com.dsl.expressions.special.In;
+import com.dsl.expressions.bool.In;
 
 /**
  * Common methods for all expressions

@@ -1,4 +1,4 @@
-package com.dsl.expressions.special;
+package com.dsl.expressions.bool;
 
 import com.dsl.expressions.AbstractExpression;
 import com.dsl.expressions.Expression;
