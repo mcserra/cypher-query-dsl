@@ -3,7 +3,7 @@ package com.dsl.expressions.path;
 import com.dsl.AsString;
 import com.dsl.StringUtils;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -13,7 +13,7 @@ public class GraphProperties implements AsString {
     private Map<String, Object> properties;
 
     public GraphProperties() {
-        properties = new HashMap<>();
+        properties = new LinkedHashMap<>();
     }
 
     public void add(final Object... o) {

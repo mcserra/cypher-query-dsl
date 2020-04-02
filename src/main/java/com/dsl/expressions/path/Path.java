@@ -34,7 +34,13 @@ public class Path implements PathExpression, RelationshipPathExpression {
     }
 
     @Override
-    public PathExpression property(Object... o) {
+    public PathExpression props(Object... o) {
+        getLast(PathProperty.class).ifPresent(pe -> pe.addProperties(o));
+        return this;
+    }
+
+    @Override
+    public RelationshipPathExpression relProps(Object... o) {
         getLast(PathProperty.class).ifPresent(pe -> pe.addProperties(o));
         return this;
     }

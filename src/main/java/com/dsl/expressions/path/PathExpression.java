@@ -30,5 +30,5 @@ public interface PathExpression extends Expression {
      * @param o should be a even number of String - Object
      * @return PathExpression
      */
-    PathExpression property(Object... o);
+    PathExpression props(Object... o);
 }
