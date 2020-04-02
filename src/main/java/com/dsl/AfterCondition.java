@@ -6,8 +6,8 @@ import com.dsl.expressions.path.PathExpression;
 
 public interface AfterCondition extends AsString {
     AfterWith with(FinalExpression... e);
-    AfterMatch matches(PathExpression... e);
-    ClauseBuilder returns(Object... e);
-    ClauseBuilder returns(String... e);
-    ClauseBuilder returns(SelectorExpression... e);
+    AfterMatch match(PathExpression... e);
+    AsString returns(SelectorExpression... e);
+    AsString returns(Object... e);
+    AsString returns(String... e);
 }
