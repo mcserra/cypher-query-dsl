@@ -2,7 +2,16 @@ package com.dsl;
 
 import com.dsl.clauses.MatchClause;
 import com.dsl.clauses.WithClause;
-import com.dsl.expressions.param.Collect;
+import com.dsl.expressions.aggregating.Average;
+import com.dsl.expressions.aggregating.Collect;
+import com.dsl.expressions.aggregating.Count;
+import com.dsl.expressions.aggregating.Max;
+import com.dsl.expressions.aggregating.Min;
+import com.dsl.expressions.aggregating.PercentileCont;
+import com.dsl.expressions.aggregating.PercentileDisc;
+import com.dsl.expressions.aggregating.StdDev;
+import com.dsl.expressions.aggregating.StdDevP;
+import com.dsl.expressions.aggregating.Sum;
 import com.dsl.expressions.param.Date;
 import com.dsl.expressions.param.FinalExpression;
 import com.dsl.expressions.param.Json;
@@ -19,6 +28,9 @@ import java.time.LocalDate;
 
 public class Query {
 
+    private Query() {
+    }
+
     public static AfterMatch match(PathExpression... pathExpressions) {
         return new ClauseBuilder(new MatchClause(pathExpressions));
     }
@@ -27,8 +39,48 @@ public class Query {
         return new ClauseBuilder(new WithClause(pathExpressions));
     }
 
-    public static Collect collect(SelectorExpression... expressions) {
-        return new Collect(expressions);
+    public static Collect collect(SelectorExpression expression) {
+        return new Collect(expression);
+    }
+
+    public static Average avg(SelectorExpression expression) {
+        return new Average(expression);
+    }
+
+    public static Count count(SelectorExpression expression) {
+        return new Count(expression);
+    }
+
+    public static Count countAll() {
+        return new Count(select("*"));
+    }
+
+    public static Min min(SelectorExpression expression) {
+        return new Min(expression);
+    }
+
+    public static Max max(SelectorExpression expression) {
+        return new Max(expression);
+    }
+
+    public static PercentileCont percentileCont(Double percentile, SelectorExpression expression) {
+        return new PercentileCont(percentile, expression);
+    }
+
+    public static PercentileDisc percentileDisc(Double percentile, SelectorExpression expression) {
+        return new PercentileDisc(percentile, expression);
+    }
+
+    public static StdDev stDev(SelectorExpression expression) {
+        return new StdDev(expression);
+    }
+
+    public static StdDevP stDevP(SelectorExpression expression) {
+        return new StdDevP(expression);
+    }
+
+    public static Sum sum(SelectorExpression expression) {
+        return new Sum(expression);
     }
 
     public static Date date(String s) {
@@ -61,5 +113,9 @@ public class Query {
 
     public static PathExpression node(String alias, String name) {
         return new Path(new Node(alias, name));
+    }
+
+    public static PathExpression node(String alias) {
+        return new Path(new Node(alias, ""));
     }
 }

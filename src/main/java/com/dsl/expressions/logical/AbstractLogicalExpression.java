@@ -1,14 +1,14 @@
 package com.dsl.expressions.logical;
 
 import com.dsl.AsString;
+import com.dsl.expressions.AbstractBooleanExpression;
 import com.dsl.expressions.AbstractExpression;
 import com.dsl.expressions.Expression;
-import com.dsl.expressions.AbstractBooleanExpression;
 
 /**
  * Represents a logical expression. Like And/Or/Not.
  */
-public class AbstractLogicalExpression extends AbstractExpression {
+public abstract class AbstractLogicalExpression extends AbstractExpression {
 
     public AbstractLogicalExpression(Expression left, LogicalOperator operator, Expression right) {
         super(new LogicalExpression(left, operator, right));
