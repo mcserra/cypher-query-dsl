@@ -23,7 +23,13 @@ public class StringUtils {
 
     public static List<String> asString(final Map<String, Object> t, final String separator) {
         List<String> strings = new ArrayList<>();
-        t.forEach((s, o) -> strings.add(String.format("%s%s%s", s, separator, o)));
+        t.forEach((s, o) -> {
+            String oString = o.toString();
+            if (o instanceof AsString) {
+                oString = ((AsString) o).asString();
+            }
+            strings.add(String.format("%s%s%s", s, separator, oString));
+        });
         return strings;
     }
 

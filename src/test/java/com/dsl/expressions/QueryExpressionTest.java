@@ -2,15 +2,14 @@ package com.dsl.expressions;
 
 import java.time.LocalDate;
 
-import static com.dsl.Query.*;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static com.dsl.Query.*;
 
 public class QueryExpressionTest {
 
     //select´
-
     @Test
     void selectTest() {
         String s = select("s").as("b").asString();
@@ -18,7 +17,6 @@ public class QueryExpressionTest {
     }
 
     //literal
-
     @Test
     void literalTest() {
         String s = literal("s").as("b").asString();
@@ -32,7 +30,6 @@ public class QueryExpressionTest {
     }
 
     //json
-
     @Test
     void jsonTest() {
         String s = json("s", literal("2")).asString();
@@ -52,13 +49,11 @@ public class QueryExpressionTest {
     }
 
     //date
-
     @Test
     void dateWithProperty() {
         String s = date(select("x").prop("y")).asString();
         Assertions.assertEquals("date(x.y)", s);
     }
-
 
     @Test
     void dateWithString() {
@@ -73,15 +68,13 @@ public class QueryExpressionTest {
     }
 
     //Var
-
     @Test
     void varTest() {
         String s = with(var("a").as("s")).asString();
         Assertions.assertEquals("WITH $a AS s", s);
     }
 
-    // node
-
+    //Node
     @Test
     void testNode() {
         String s = node("s", "Series").right("ht", "HAS_TYPE").to("t", "Type").asString();
@@ -105,4 +98,82 @@ public class QueryExpressionTest {
         String s = node("s", "Series").right("ht", "HAS_TYPE").relProps("foo", "bar", "kid", "boy").to("t", "Type").asString();
         Assertions.assertEquals("(s:Series)-[ht:HAS_TYPE {foo: bar, kid: boy}]->(t:Type)", s);
     }
+
+    @Test
+    void collectTest() {
+        String s = match(node("n", "Person")).returns(collect(select("n").prop("age"))).asString();
+        Assertions.assertEquals("MATCH (n:Person) RETURN collect(n.age)", s);
+    }
+
+    //Aggregating expressions
+    @Test
+    void avgTest() {
+        String s = with(literal(1).as("dur")).returns(avg(select("dur"))).asString();
+        Assertions.assertEquals("WITH 1 AS dur RETURN avg(dur)", s);
+    }
+
+    @Test
+    void countTest() {
+        String s = with(literal(1).as("dur")).returns(count(select("dur"))).asString();
+        Assertions.assertEquals("WITH 1 AS dur RETURN count(dur)", s);
+    }
+
+    @Test
+    void countAllTest() {
+        String s = match(node("n").props("name", literal("A")).right("r", "").to("", "")).returns("r", countAll()).asString();
+        Assertions.assertEquals("MATCH (n {name: 'A'})-[r]->() RETURN r, count(*)", s);
+    }
+
+   // @Test //TODO: When we have distinct
+   // void countWithoutDuplicates() {
+   //     String s = match(node("me", "Person"))
+   //         .where(select("me").prop("name").eq(literal("A")))
+   //         .returns(count()).asString();
+   //     Assertions.assertEquals(
+   //         "MATCH (me:Person) WHERE me.name = 'A' RETURN count(DISTINCT friend_of_friend), count(friend_of_friend)", s);
+   //
+   // }
+
+    @Test
+    void minTest() {
+        String s = with(select("[1, 3]").as("x")).returns(min(select("x"))).asString();
+        Assertions.assertEquals("WITH [1, 3] AS x RETURN min(x)", s);
+    }
+
+    @Test
+    void maxTest() {
+        String s = with(select("[1, 3]").as("x")).returns(max(select("x"))).asString();
+        Assertions.assertEquals("WITH [1, 3] AS x RETURN max(x)", s);
+    }
+
+    @Test
+    void percentileContTest() {
+        String s = match(node("n", "Person")).returns(percentileCont(0.4, select("n").prop("age"))).asString();
+        Assertions.assertEquals("MATCH (n:Person) RETURN percentileCont(n.age, 0.4)", s);
+    }
+
+    @Test
+    void percentileDiscTest() {
+        String s = match(node("n", "Person")).returns(percentileDisc(0.5, select("n").prop("age"))).asString();
+        Assertions.assertEquals("MATCH (n:Person) RETURN percentileDisc(n.age, 0.5)", s);
+    }
+
+    @Test
+    void stdDev() {
+        String s = match(node("n")).where(select("n").prop("name").in("A", "B", "C")).returns(stDev(select("n").prop("age"))).asString();
+        Assertions.assertEquals("MATCH (n) WHERE n.name IN ['A', 'B', 'C'] RETURN stDev(n.age)", s);
+    }
+
+    @Test
+    void stdDevP() {
+        String s = match(node("n")).where(select("n").prop("name").in("A", "B", "C")).returns(stDevP(select("n").prop("age"))).asString();
+        Assertions.assertEquals("MATCH (n) WHERE n.name IN ['A', 'B', 'C'] RETURN stDevP(n.age)", s);
+    }
+
+    @Test
+    void sumTest() {
+        String s = match(node("n", "Person")).returns(sum(select("n").prop("age"))).asString();
+        Assertions.assertEquals("MATCH (n:Person) RETURN sum(n.age)", s);
+    }
+
 }

@@ -20,22 +20,4 @@ public class ParamExpressionTest {
         String s = new Json("n", new Selector("y").prop("x")).as("a").asString();
         Assertions.assertEquals("{n: y.x} AS a", s);
     }
-
-    @Test
-    void collectTest() {
-        String s = collect(json("n", new Selector("y").prop("x"))).as("a").asString();
-        Assertions.assertEquals("collect({n: y.x}) AS a", s);
-    }
-
-    @Test
-    void collectTest2() {
-        String s = collect(select("s").prop("p")).as("a").asString();
-        Assertions.assertEquals("collect(s.p) AS a", s);
-    }
-
-    @Test
-    void collectTest3() {
-        String s = collect(new Variable("s")).as("a").asString();
-        Assertions.assertEquals("collect($s) AS a", s);
-    }
 }

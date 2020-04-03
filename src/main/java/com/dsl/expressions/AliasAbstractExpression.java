@@ -1,4 +1,8 @@
-package com.dsl.expressions.param;
+package com.dsl.expressions;
+
+import com.dsl.expressions.param.As;
+import com.dsl.expressions.param.FinalExpression;
+import com.dsl.expressions.param.SelectorExpression;
 
 /**
  * Represents a class than can be aliased.

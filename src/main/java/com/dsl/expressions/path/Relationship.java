@@ -43,10 +43,10 @@ public class Relationship implements PathProperty {
         StringBuilder builder = new StringBuilder();
 
         builder.append('[');
-        if (alias != null) {
+        if (alias != null && !alias.isBlank()) {
             builder.append(alias);
         }
-        if (nodeName != null) {
+        if (nodeName != null && !nodeName.isBlank()) {
             builder.append(':');
             builder.append(nodeName);
         }

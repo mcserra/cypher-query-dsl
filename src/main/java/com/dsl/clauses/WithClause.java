@@ -1,7 +1,6 @@
 package com.dsl.clauses;
 
 import com.dsl.StringUtils;
-import com.dsl.expressions.logical.LogicalExpression;
 import com.dsl.expressions.param.FinalExpression;
 
 import java.util.ArrayList;

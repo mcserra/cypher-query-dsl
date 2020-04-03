@@ -1,6 +1,7 @@
 package com.dsl.expressions;
 
 import com.dsl.expressions.bool.BooleanExpression;
+import com.dsl.expressions.bool.In;
 import com.dsl.expressions.logical.And;
 import com.dsl.expressions.logical.LogicalExpression;
 import com.dsl.expressions.logical.Not;
@@ -9,7 +10,6 @@ import com.dsl.expressions.param.As;
 import com.dsl.expressions.param.FinalExpression;
 import com.dsl.expressions.param.Literal;
 import com.dsl.expressions.param.SelectorExpression;
-import com.dsl.expressions.bool.In;
 
 /**
  * Common methods for all expressions
