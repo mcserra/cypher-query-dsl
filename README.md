@@ -1,3 +1,3 @@
 # cypher-query-dsl
 
-[![Code Coverage](https://img.shields.io/codecov/c/github/pvorb/property-providers/develop.svg)](https://codecov.io/github/pvorb/property-providers?branch=develop)
+[![Code Coverage](https://img.shields.io/codecov/c/github/mcserra/cypher-query-dsl/master.svg)](https://codecov.io/github/mcserra/cypher-query-dsl?branch=master)
