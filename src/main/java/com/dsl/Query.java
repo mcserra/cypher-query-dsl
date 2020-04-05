@@ -12,6 +12,8 @@ import com.dsl.expressions.aggregating.PercentileDisc;
 import com.dsl.expressions.aggregating.StdDev;
 import com.dsl.expressions.aggregating.StdDevP;
 import com.dsl.expressions.aggregating.Sum;
+import com.dsl.expressions.logical.LogicalExpression;
+import com.dsl.expressions.logical.Not;
 import com.dsl.expressions.param.Date;
 import com.dsl.expressions.param.FinalExpression;
 import com.dsl.expressions.param.Json;
@@ -31,12 +33,12 @@ public class Query {
     private Query() {
     }
 
-    public static AfterMatch match(PathExpression... pathExpressions) {
-        return new ClauseBuilder(new MatchClause(pathExpressions));
+    public static AfterMatch match(PathExpression... expressions) {
+        return new ClauseBuilder(new MatchClause(expressions));
     }
 
-    public static AfterMatch with(FinalExpression... pathExpressions) {
-        return new ClauseBuilder(new WithClause(pathExpressions));
+    public static AfterWith with(FinalExpression... expressions) {
+        return new ClauseBuilder(new WithClause(expressions));
     }
 
     public static Collect collect(SelectorExpression expression) {
@@ -117,5 +119,9 @@ public class Query {
 
     public static PathExpression node(String alias) {
         return new Path(new Node(alias, ""));
+    }
+
+    public static Not not(LogicalExpression e) {
+        return new Not(e);
     }
 }

@@ -18,20 +18,8 @@ public class Relationship implements PathProperty {
         this.properties = new GraphProperties();
     }
 
-    public String getAlias() {
-        return alias;
-    }
-
-    public String getNodeName() {
-        return nodeName;
-    }
-
     public Direction getDir() {
         return dir;
-    }
-
-    public GraphProperties getProperties() {
-        return properties;
     }
 
     public void addProperties(Object... props) {

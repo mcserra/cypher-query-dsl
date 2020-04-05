@@ -6,7 +6,7 @@ import com.dsl.AsString;
  * Represents an expression, with the right and left side expression and the operator.
  * If no operator or no right expression exists, than this represents an ExpressionParameter.
  */
-public class AbstractExpression extends AbstractBooleanExpression implements AsString {
+public class AbstractExpression extends AbstractBooleanExpression {
     protected Expression left;
     protected String operator;
     protected Expression right;

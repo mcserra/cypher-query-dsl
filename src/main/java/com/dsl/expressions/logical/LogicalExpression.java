@@ -9,6 +9,4 @@ public interface LogicalExpression extends Expression {
     LogicalExpression and(LogicalExpression expression);
 
     LogicalExpression or(LogicalExpression expression);
-
-    LogicalExpression not(LogicalExpression expression);
 }

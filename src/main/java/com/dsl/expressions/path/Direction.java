@@ -2,5 +2,6 @@ package com.dsl.expressions.path;
 
 public enum Direction {
     LEFT,
-    RIGHT
+    RIGHT,
+    NONE
 }

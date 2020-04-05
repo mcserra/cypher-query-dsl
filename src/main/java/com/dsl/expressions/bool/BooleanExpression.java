@@ -3,6 +3,7 @@ package com.dsl.expressions.bool;
 import com.dsl.expressions.Expression;
 import com.dsl.expressions.logical.LogicalExpression;
 import com.dsl.expressions.param.SelectorExpression;
+import com.dsl.expressions.param.Variable;
 
 /**
  * An expression that returns true or false
@@ -32,7 +33,8 @@ public interface BooleanExpression extends Expression {
 
     LogicalExpression bte(Expression expression);
 
-    LogicalExpression in(final SelectorExpression... expressions);
+    LogicalExpression in(SelectorExpression... expressions);
 
-    LogicalExpression in(final Object... expressions);
+    LogicalExpression in(Object... expressions);
+    LogicalExpression in(Variable expressions);
 }

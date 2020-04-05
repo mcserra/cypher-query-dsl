@@ -4,12 +4,12 @@ import com.dsl.expressions.bool.BooleanExpression;
 import com.dsl.expressions.bool.In;
 import com.dsl.expressions.logical.And;
 import com.dsl.expressions.logical.LogicalExpression;
-import com.dsl.expressions.logical.Not;
 import com.dsl.expressions.logical.Or;
 import com.dsl.expressions.param.As;
 import com.dsl.expressions.param.FinalExpression;
 import com.dsl.expressions.param.Literal;
 import com.dsl.expressions.param.SelectorExpression;
+import com.dsl.expressions.param.Variable;
 
 /**
  * Common methods for all expressions
@@ -92,15 +92,16 @@ public abstract class AbstractBooleanExpression implements BooleanExpression, Lo
         return new In(this, o);
     }
 
+    @Override
+    public LogicalExpression in(Variable o) {
+        return new In(this, o);
+    }
+
     public LogicalExpression and(LogicalExpression expression) {
         return new And(this, expression);
     }
 
     public LogicalExpression or(LogicalExpression expression) {
         return new Or(this, expression);
-    }
-
-    public LogicalExpression not(LogicalExpression expression) {
-        return new Not(expression);
     }
 }
