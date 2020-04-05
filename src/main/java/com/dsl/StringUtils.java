@@ -5,7 +5,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public class StringUtils {
+public final class StringUtils {
+
+    private StringUtils() {
+    }
 
     public static <T extends AsString> List<String> asString(final Collection<T> t) {
         List<String> c = new ArrayList<>();
@@ -30,12 +33,6 @@ public class StringUtils {
             }
             strings.add(String.format("%s%s%s", s, separator, oString));
         });
-        return strings;
-    }
-
-    public static <T extends AsString> List<String> string(final Map<String, T> t, final String separator) {
-        List<String> strings = new ArrayList<>();
-        t.forEach((s, o) -> strings.add(String.format("%s%s%s", s, separator, o.asString())));
         return strings;
     }
 }

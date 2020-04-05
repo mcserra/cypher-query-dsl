@@ -16,6 +16,21 @@ public interface PathExpression extends Expression {
     RelationshipPathExpression right(String alias, String relationship);
 
     /**
+     * Joins a relationship with a direction to the right node.
+     *
+     * @param alias        relationship alias.
+     * @return RelationshipPathExpression.
+     */
+    RelationshipPathExpression right(String alias);
+
+    /**
+     * Joins a relationship with a direction to the right node.
+     *
+     * @return RelationshipPathExpression.
+     */
+    RelationshipPathExpression right();
+
+    /**
      * Joins a relationship with a direction to the left node.
      *
      * @param alias        relationship alias.
@@ -23,6 +38,96 @@ public interface PathExpression extends Expression {
      * @return RelationshipPathExpression.
      */
     RelationshipPathExpression left(String alias, String relationship);
+
+    /**
+     * Joins a relationship with a direction to the left node.
+     *
+     * @param alias        relationship alias.
+     * @return RelationshipPathExpression.
+     */
+    RelationshipPathExpression left(String alias);
+
+
+    /**
+     * Joins a relationship with a direction to the left node.
+     *
+     * @return RelationshipPathExpression.
+     */
+    RelationshipPathExpression left();
+
+    /**
+     * Joins a relationship with no explicit direction.
+     *
+     * @param alias        relationship alias.
+     * @param relationship relationship name.
+     * @return RelationshipPathExpression.
+     */
+    RelationshipPathExpression toRel(String alias, String relationship);
+
+    /**
+     * Joins a relationship with no explicit direction.
+     *
+     * @param alias        relationship alias.
+     * @return RelationshipPathExpression.
+     */
+    RelationshipPathExpression toRel(String alias);
+
+    /**
+     * Joins a relationship with no explicit direction.
+     *
+     * @return RelationshipPathExpression.
+     */
+    RelationshipPathExpression toRel();
+
+    /**
+     * Joins another node with a direction to the left node.
+     *
+     * @param alias node alias
+     * @param node node name
+     * @return PathExpression
+     */
+    PathExpression leftNode(String alias, String node);
+
+    /**
+     * Joins another node with a direction to the left node.
+     *
+     * @param alias node alias
+     * @param node node name
+     * @return PathExpression
+     */
+    PathExpression rightNode(String alias, String node);
+
+    /**
+     * Joins another node with a direction to the left node.
+     *
+     * @param alias node alias
+     * @return PathExpression
+     */
+    PathExpression rightNode(String alias);
+
+    /**
+     * Joins another node with a direction to the left node.
+     *
+     * @param alias node alias
+     * @return PathExpression
+     */
+    PathExpression leftNode(String alias);
+
+    /**
+     * Joins another node with a no direction.
+     *
+     * @param alias node alias
+     * @return PathExpression
+     */
+    PathExpression toNode(String alias);
+
+    /**
+     * Joins another node with a no direction.
+     *
+     * @param alias node alias
+     * @return PathExpression
+     */
+    PathExpression toNode(String alias, String node);
 
     /**
      * Adds properties filtering properties to the PathExpression.

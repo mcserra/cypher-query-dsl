@@ -176,4 +176,15 @@ public class QueryExpressionTest {
         Assertions.assertEquals("MATCH (n:Person) RETURN sum(n.age)", s);
     }
 
+    @Test
+    void inWithVar() {
+        String s = match(node("n", "Person")).where(select("n").in(var("persons"))).returns(sum(select("n").prop("age"))).asString();
+        Assertions.assertEquals("MATCH (n:Person) WHERE n IN $persons RETURN sum(n.age)", s);
+    }
+
+    @Test
+    void notTest() {
+        String s = not(select("s").prop("name").eq("b")).asString();
+        Assertions.assertEquals("NOT (s.name = 'b')", s);
+    }
 }

@@ -8,7 +8,6 @@ import static com.dsl.Query.*;
 public class ClauseBuilderTests {
 
     // MATCH
-
     @Test
     void match1() {
         String s = match(
@@ -31,8 +30,15 @@ public class ClauseBuilderTests {
         Assertions.assertEquals("MATCH (s:Series {power: 1000, description: x})-[rel:Relation]->(a:Andes), (m:Model {name: n})", s);
     }
 
-    // WHERE
+    @Test
+    void innerMatch() {
+        String s = with(select("a").as("b"))
+            .match(node("b")).returns("b").asString();
 
+        Assertions.assertEquals("WITH a AS b MATCH (b) RETURN b", s);
+    }
+
+    // WHERE
     @Test
     void where1() {
         String s =
@@ -46,7 +52,6 @@ public class ClauseBuilderTests {
     }
 
     // WITH
-
     @Test
     void startingWith() {
         String s = with(literal(1)).returns("A").asString();
@@ -75,7 +80,6 @@ public class ClauseBuilderTests {
     }
 
     // RETURN
-
     @Test
     void returnString() {
         String s = with(literal(1).as("x")).returns("x").asString();
@@ -95,8 +99,13 @@ public class ClauseBuilderTests {
     }
 
     @Test
-    void returnExpressionprops() {
+    void returnExpressionProps() {
         String s = with(literal(1).as("x")).returns(select("x").prop("name")).asString();
         Assertions.assertEquals("WITH 1 AS x RETURN x.name", s);
+    }
+
+    @Test
+    void returnsWithWrongType() {
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> with(literal(1).as("x")).returns(1).asString());
     }
 }

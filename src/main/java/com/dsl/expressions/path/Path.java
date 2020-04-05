@@ -22,14 +22,96 @@ public class Path implements PathExpression, RelationshipPathExpression {
     }
 
     @Override
-    public RelationshipPathExpression right(String alias, String node) {
-        e.add(new Relationship(alias, node, Direction.RIGHT));
+    public PathExpression to(String alias) {
+        return to(alias, null);
+    }
+
+    @Override
+    public PathExpression to() {
+        return to(null);
+    }
+
+    @Override
+    public RelationshipPathExpression right(String alias) {
+        return right(alias, null);
+    }
+
+    @Override
+    public RelationshipPathExpression right() {
+        return right(null);
+    }
+
+    @Override
+    public RelationshipPathExpression left(String alias) {
+        return left(alias, null);
+    }
+
+    @Override
+    public RelationshipPathExpression left() {
+        return left(null);
+    }
+
+    @Override
+    public RelationshipPathExpression toRel(String alias) {
+        return toRel(alias, null);
+    }
+
+    @Override
+    public RelationshipPathExpression toRel() {
+        return toRel(null);
+    }
+
+    @Override
+    public RelationshipPathExpression right(String alias, String rel) {
+        e.add(new Relationship(alias, rel, Direction.RIGHT));
         return this;
     }
 
     @Override
-    public RelationshipPathExpression left(String alias, String node) {
-        e.add(new Relationship(alias, node, Direction.LEFT));
+    public RelationshipPathExpression left(String alias, String rel) {
+        e.add(new Relationship(alias, rel, Direction.LEFT));
+        return this;
+    }
+
+    @Override
+    public RelationshipPathExpression toRel(String alias, String rel) {
+        e.add(new Relationship(alias, rel, Direction.NONE));
+        return this;
+    }
+
+    @Override
+    public PathExpression rightNode(String alias, String node) {
+        e.add(new Node(alias, node, Direction.RIGHT));
+        return this;
+    }
+
+    @Override
+    public PathExpression leftNode(String alias, String node) {
+        e.add(new Node(alias, node, Direction.LEFT));
+        return this;
+    }
+
+    @Override
+    public PathExpression rightNode(String alias) {
+        e.add(new Node(alias, null, Direction.RIGHT));
+        return this;
+    }
+
+    @Override
+    public PathExpression leftNode(String alias) {
+        e.add(new Node(alias, null, Direction.LEFT));
+        return this;
+    }
+
+    @Override
+    public PathExpression toNode(String alias, String node) {
+        e.add(new Node(alias, node, Direction.NONE));
+        return this;
+    }
+
+    @Override
+    public PathExpression toNode(String alias) {
+        e.add(new Node(alias, null, Direction.NONE));
         return this;
     }
 
@@ -63,7 +145,19 @@ public class Path implements PathExpression, RelationshipPathExpression {
         if (p instanceof Relationship) {
             return relationshipString((Relationship) p);
         } else {
-            return p.asString();
+            return nodeString((Node) p);
+        }
+    }
+
+    private String nodeString(Node node) {
+        if (node.getDirection() == null) {
+            return node.asString();
+        } else if (Direction.LEFT.equals(node.getDirection())) {
+            return String.format("<--%s", node.asString());
+        } else if (Direction.RIGHT.equals(node.getDirection())) {
+            return String.format("-->%s", node.asString());
+        } else {
+            return String.format("--%s", node.asString());
         }
     }
 
