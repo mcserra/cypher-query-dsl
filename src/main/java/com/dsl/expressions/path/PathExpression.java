@@ -106,12 +106,26 @@ public interface PathExpression extends Expression {
     PathExpression rightNode(String alias);
 
     /**
+     * Joins another node with a direction to the right.
+     *
+     * @return PathExpression
+     */
+    PathExpression rightNode();
+
+    /**
      * Joins another node with a direction to the left node.
      *
      * @param alias node alias
      * @return PathExpression
      */
     PathExpression leftNode(String alias);
+
+    /**
+     * Joins another node with a direction to the left.
+     *
+     * @return PathExpression
+     */
+    PathExpression leftNode();
 
     /**
      * Joins another node with a no direction.

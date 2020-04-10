@@ -180,4 +180,16 @@ class ExpressionTest {
         String s = node("s", "Name").left().to().asString();
         Assertions.assertEquals("(s:Name)<-[]-()", s);
     }
+
+    @Test
+    void nodeToNodeLeft() {
+        String s = node("s", "Name").leftNode().asString();
+        Assertions.assertEquals("(s:Name)<--()", s);
+    }
+
+    @Test
+    void nodeToNodeRight() {
+        String s = node("s", "Name").rightNode().asString();
+        Assertions.assertEquals("(s:Name)-->()", s);
+    }
 }
