@@ -98,6 +98,18 @@ public class Path implements PathExpression, RelationshipPathExpression {
     }
 
     @Override
+    public PathExpression rightNode() {
+        e.add(new Node(Direction.RIGHT));
+        return this;
+    }
+
+    @Override
+    public PathExpression leftNode() {
+        e.add(new Node(Direction.LEFT));
+        return this;
+    }
+
+    @Override
     public PathExpression leftNode(String alias) {
         e.add(new Node(alias, null, Direction.LEFT));
         return this;
