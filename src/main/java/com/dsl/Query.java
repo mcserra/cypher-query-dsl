@@ -37,6 +37,10 @@ public class Query {
         return new ClauseBuilder(new MatchClause(expressions));
     }
 
+    public static AfterMatch optMatch(PathExpression... expressions) {
+        return new ClauseBuilder(new MatchClause(true, expressions));
+    }
+
     public static AfterWith with(FinalExpression... expressions) {
         return new ClauseBuilder(new WithClause(expressions));
     }
@@ -118,7 +122,11 @@ public class Query {
     }
 
     public static PathExpression node(String alias) {
-        return new Path(new Node(alias, ""));
+        return node(alias, "");
+    }
+
+    public static PathExpression node() {
+        return node("", "");
     }
 
     public static Not not(LogicalExpression e) {
