@@ -32,7 +32,7 @@
     <failOnMissingWebXml>false</failOnMissingWebXml>
     <java.version>11</java.version>
     <surefire.version>3.0.0-M4</surefire.version>
-    <junit.version>5.6.0</junit.version>
+    <junit.version>5.6.2</junit.version>
     <jacoco-maven-plugin.version>0.8.4</jacoco-maven-plugin.version>
   </properties>
   <build>
