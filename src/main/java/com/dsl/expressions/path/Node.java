@@ -17,6 +17,13 @@ public class Node implements PathProperty {
         this.properties = new GraphProperties();
     }
 
+    public Node(Direction direction) {
+        this.alias = null;
+        this.nodeName = null;
+        this.direction = direction;
+        this.properties = new GraphProperties();
+    }
+
     public Node(String alias, String nodeName) {
         this.alias = alias;
         this.nodeName = nodeName;

@@ -28,6 +28,12 @@ public class ClauseBuilder implements AsString, AfterMatch, AfterWith, AfterCond
   }
 
   @Override
+  public AfterMatch optMatch(PathExpression... pathExpressions) {
+    clauses.add(new MatchClause(true, pathExpressions));
+    return this;
+  }
+
+  @Override
   public AfterReturns returns(SelectorExpression... e) {
     this.clauses.add(new ReturnClause(e));
     return this;

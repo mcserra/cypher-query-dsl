@@ -187,4 +187,22 @@ public class QueryExpressionTest {
         String s = not(select("s").prop("name").eq("b")).asString();
         Assertions.assertEquals("NOT (s.name = 'b')", s);
     }
+
+    @Test
+    void optionalMatchTest() {
+        String s = optMatch(node().rightNode()).asString();
+        Assertions.assertEquals("OPTIONAL MATCH ()-->()", s);
+    }
+
+    @Test
+    void optionalMatchConditionalTest() {
+        String s = optMatch(node("a").rightNode()).where(select("a").eq(literal("foo"))).optMatch(node("c")).asString();
+        Assertions.assertEquals("OPTIONAL MATCH (a)-->() WHERE a = 'foo' OPTIONAL MATCH (c)", s);
+    }
+
+    @Test
+    void optionalMatchWithTest() {
+        String s = with(literal("s").as("A")).optMatch(node("b")).asString();
+        Assertions.assertEquals("WITH 's' AS A OPTIONAL MATCH (b)", s);
+    }
 }
