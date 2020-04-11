@@ -1,14 +1,11 @@
 package com.dsl.expressions;
 
+import com.dsl.expressions.param.Literal;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static com.dsl.Query.literal;
-import static com.dsl.Query.match;
-import static com.dsl.Query.node;
-import static com.dsl.Query.select;
-import static com.dsl.Query.var;
-import static com.dsl.Query.with;
+import static com.dsl.Query.*;
 
 public class ClauseBuilderTests {
 
@@ -17,7 +14,7 @@ public class ClauseBuilderTests {
   void match1() {
     String s = match(
         node("s", "Series").props("power", 1000, "description", "x")
-            .left("rel", "Relation").to("a", "Andes"),
+            .left().rel("rel:Relation").to("a:Andes"),
         node("m", "Model").props("name", "n")
     ).asString();
 
@@ -28,7 +25,7 @@ public class ClauseBuilderTests {
   void match2() {
     String s = match(
         node("s", "Series").props("power", 1000, "description", "x")
-            .right("rel", "Relation").to("a", "Andes"),
+            .right().rel("rel:Relation").to("a:Andes"),
         node("m", "Model").props("name", "n")
     ).asString();
 
@@ -48,7 +45,7 @@ public class ClauseBuilderTests {
   void where1() {
     String s =
         match(node("s", "Series").props("power", 1000, "description", "x")
-            .right("rel", "Relation").to("a", "Andes"), node("m", "Model").props("name", "n")
+            .right().rel("rel:Relation").to("a:Andes"), node("m", "Model").props("name", "n")
         ).where(select("s").prop("description").eq("X")
         ).returns(select("s")
         ).asString();

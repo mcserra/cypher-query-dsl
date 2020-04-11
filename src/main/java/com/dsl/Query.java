@@ -121,8 +121,8 @@ public class Query {
         return new Path(new Node(alias, name));
     }
 
-    public static PathExpression node(String alias) {
-        return node(alias, "");
+    public static PathExpression node(String node) {
+        return node(node, "");
     }
 
     public static PathExpression node() {

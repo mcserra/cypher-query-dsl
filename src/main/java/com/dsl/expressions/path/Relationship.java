@@ -8,18 +8,26 @@ public class Relationship implements PathProperty {
 
     private String alias;
     private String nodeName;
-    private Direction dir;
+    private Direction direction;
     private GraphProperties properties;
 
     public Relationship(String alias, String nodeName, Direction direction) {
         this.alias = alias;
         this.nodeName = nodeName;
-        this.dir = direction;
+        this.direction = direction;
         this.properties = new GraphProperties();
     }
 
-    public Direction getDir() {
-        return dir;
+    public Relationship(Direction direction) {
+        this(null, null, direction);
+    }
+
+    public Relationship(String alias, Direction direction) {
+        this(alias, null, direction);
+    }
+
+    public Direction getDirection() {
+        return direction;
     }
 
     public void addProperties(Object... props) {

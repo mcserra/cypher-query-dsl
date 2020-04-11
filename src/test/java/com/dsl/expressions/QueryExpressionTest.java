@@ -77,25 +77,25 @@ public class QueryExpressionTest {
     //Node
     @Test
     void testNode() {
-        String s = node("s", "Series").right("ht", "HAS_TYPE").to("t", "Type").asString();
+        String s = node("s", "Series").right().rel("ht:HAS_TYPE").to("t:Type").asString();
         Assertions.assertEquals("(s:Series)-[ht:HAS_TYPE]->(t:Type)", s);
     }
 
     @Test
     void testNodeWithProperty() {
-        String s = node("s", "Series").props("foo", "bar", "kid", "boy").right("ht", "HAS_TYPE").to("t", "Type").asString();
+        String s = node("s", "Series").props("foo", "bar", "kid", "boy").right().rel("ht:HAS_TYPE").to("t:Type").asString();
         Assertions.assertEquals("(s:Series {foo: bar, kid: boy})-[ht:HAS_TYPE]->(t:Type)", s);
     }
 
     @Test
     void testNodeWithDiffProperty() {
-        String s = node("s", "Series").props("foo", "bar").props("kid", "boy").right("ht", "HAS_TYPE").to("t", "Type").asString();
+        String s = node("s", "Series").props("foo", "bar").props("kid", "boy").right().rel("ht:HAS_TYPE").to("t:Type").asString();
         Assertions.assertEquals("(s:Series {foo: bar, kid: boy})-[ht:HAS_TYPE]->(t:Type)", s);
     }
 
     @Test
     void testRelationshipWithProperty() {
-        String s = node("s", "Series").right("ht", "HAS_TYPE").relProps("foo", "bar", "kid", "boy").to("t", "Type").asString();
+        String s = node("s", "Series").right().rel("ht:HAS_TYPE").relProps("foo", "bar", "kid", "boy").to("t:Type").asString();
         Assertions.assertEquals("(s:Series)-[ht:HAS_TYPE {foo: bar, kid: boy}]->(t:Type)", s);
     }
 
@@ -120,7 +120,7 @@ public class QueryExpressionTest {
 
     @Test
     void countAllTest() {
-        String s = match(node("n").props("name", literal("A")).right("r", "").to("", "")).returns("r", countAll()).asString();
+        String s = match(node("n").props("name", literal("A")).right().rel("r").to()).returns("r", countAll()).asString();
         Assertions.assertEquals("MATCH (n {name: 'A'})-[r]->() RETURN r, count(*)", s);
     }
 
@@ -190,13 +190,13 @@ public class QueryExpressionTest {
 
     @Test
     void optionalMatchTest() {
-        String s = optMatch(node().rightNode()).asString();
+        String s = optMatch(node().right().node()).asString();
         Assertions.assertEquals("OPTIONAL MATCH ()-->()", s);
     }
 
     @Test
     void optionalMatchConditionalTest() {
-        String s = optMatch(node("a").rightNode()).where(select("a").eq(literal("foo"))).optMatch(node("c")).asString();
+        String s = optMatch(node("a").right().node()).where(select("a").eq(literal("foo"))).optMatch(node("c")).asString();
         Assertions.assertEquals("OPTIONAL MATCH (a)-->() WHERE a = 'foo' OPTIONAL MATCH (c)", s);
     }
 
