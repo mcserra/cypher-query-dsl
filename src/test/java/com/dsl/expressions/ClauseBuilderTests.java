@@ -3,7 +3,12 @@ package com.dsl.expressions;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static com.dsl.Query.*;
+import static com.dsl.Query.literal;
+import static com.dsl.Query.match;
+import static com.dsl.Query.node;
+import static com.dsl.Query.select;
+import static com.dsl.Query.var;
+import static com.dsl.Query.with;
 
 public class ClauseBuilderTests {
 
@@ -120,6 +125,12 @@ public class ClauseBuilderTests {
   void limitWithLiteral() {
     String s = match(node("n")).returns(select("n").prop("name")).limit(literal(1)).asString();
     Assertions.assertEquals("MATCH (n) RETURN n.name LIMIT 1", s);
+  }
+
+  @Test
+  void limitWithVariable() {
+    String s = match(node("s")).with(select("s")).limit(var("limit")).returns("s").asString();
+    Assertions.assertEquals("MATCH (s) WITH s LIMIT $limit RETURN s", s);
   }
 
 }

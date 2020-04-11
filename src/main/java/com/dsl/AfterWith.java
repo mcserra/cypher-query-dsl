@@ -1,12 +1,4 @@
 package com.dsl;
 
-import com.dsl.expressions.param.SelectorExpression;
-import com.dsl.expressions.path.PathExpression;
-
-public interface AfterWith extends AsString {
-    AfterMatch match(PathExpression... e);
-    AfterMatch optMatch(PathExpression... e);
-    AsString returns(SelectorExpression... e);
-    AsString returns(String... e);
-    AsString returns(Object... e);
+public interface AfterWith extends AsString, Match, Returns, Limit, Where {
 }
