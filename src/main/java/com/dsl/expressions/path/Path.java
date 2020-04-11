@@ -10,120 +10,63 @@ import java.util.Optional;
 public class Path implements PathExpression, RelationshipPathExpression {
 
     private final List<PathProperty> e = new ArrayList<>();
+    private Direction lastDir = Direction.NONE;
 
     public Path(PathProperty e) {
         this.e.add(e);
     }
 
     @Override
-    public PathExpression to(String alias, String node) {
-        e.add(new Node(alias, node));
+    public PathExpression to(String node) {
+        e.add(new Node(node, popDirection()));
         return this;
-    }
-
-    @Override
-    public PathExpression to(String alias) {
-        return to(alias, null);
     }
 
     @Override
     public PathExpression to() {
-        return to(null);
-    }
-
-    @Override
-    public RelationshipPathExpression right(String alias) {
-        return right(alias, null);
-    }
-
-    @Override
-    public RelationshipPathExpression right() {
-        return right(null);
-    }
-
-    @Override
-    public RelationshipPathExpression left(String alias) {
-        return left(alias, null);
-    }
-
-    @Override
-    public RelationshipPathExpression left() {
-        return left(null);
-    }
-
-    @Override
-    public RelationshipPathExpression toRel(String alias) {
-        return toRel(alias, null);
-    }
-
-    @Override
-    public RelationshipPathExpression toRel() {
-        return toRel(null);
-    }
-
-    @Override
-    public RelationshipPathExpression right(String alias, String rel) {
-        e.add(new Relationship(alias, rel, Direction.RIGHT));
+        e.add(new Node(popDirection()));
         return this;
     }
 
     @Override
-    public RelationshipPathExpression left(String alias, String rel) {
-        e.add(new Relationship(alias, rel, Direction.LEFT));
+    public PathExpression right() {
+        lastDir = Direction.RIGHT;
         return this;
     }
 
     @Override
-    public RelationshipPathExpression toRel(String alias, String rel) {
-        e.add(new Relationship(alias, rel, Direction.NONE));
+    public PathExpression left() {
+        lastDir = Direction.LEFT;
         return this;
     }
 
     @Override
-    public PathExpression rightNode(String alias, String node) {
-        e.add(new Node(alias, node, Direction.RIGHT));
+    public PathExpression node(String node) {
+        e.add(new Node(node, popDirection()));
         return this;
     }
 
     @Override
-    public PathExpression leftNode(String alias, String node) {
-        e.add(new Node(alias, node, Direction.LEFT));
+    public PathExpression node() {
+        e.add(new Node(popDirection()));
         return this;
     }
 
     @Override
-    public PathExpression rightNode(String alias) {
-        e.add(new Node(alias, null, Direction.RIGHT));
+    public RelationshipPathExpression rel() {
+        e.add(new Relationship(popDirection()));
         return this;
     }
 
     @Override
-    public PathExpression rightNode() {
-        e.add(new Node(Direction.RIGHT));
+    public RelationshipPathExpression rel(String rel) {
+        e.add(new Relationship(rel, popDirection()));
         return this;
     }
 
     @Override
-    public PathExpression leftNode() {
-        e.add(new Node(Direction.LEFT));
-        return this;
-    }
-
-    @Override
-    public PathExpression leftNode(String alias) {
-        e.add(new Node(alias, null, Direction.LEFT));
-        return this;
-    }
-
-    @Override
-    public PathExpression toNode(String alias, String node) {
-        e.add(new Node(alias, node, Direction.NONE));
-        return this;
-    }
-
-    @Override
-    public PathExpression toNode(String alias) {
-        e.add(new Node(alias, null, Direction.NONE));
+    public RelationshipPathExpression rel(String selector, String rel) {
+        e.add(new Relationship(selector, rel, popDirection()));
         return this;
     }
 
@@ -137,6 +80,13 @@ public class Path implements PathExpression, RelationshipPathExpression {
     public RelationshipPathExpression relProps(Object... o) {
         getLast(PathProperty.class).ifPresent(pe -> pe.addProperties(o));
         return this;
+    }
+
+    private Direction popDirection() {
+        PathProperty lastProp = getLast(PathProperty.class).orElse(null);
+        Direction dir = lastProp instanceof Relationship ? null : lastDir;
+        lastDir = Direction.NONE;
+        return dir;
     }
 
     private <T> Optional<T> getLast(Class<T> clazz) {
@@ -161,7 +111,7 @@ public class Path implements PathExpression, RelationshipPathExpression {
         }
     }
 
-    private String nodeString(Node node) {
+    private String nodeString(final Node node) {
         if (node.getDirection() == null) {
             return node.asString();
         } else if (Direction.LEFT.equals(node.getDirection())) {
@@ -174,9 +124,9 @@ public class Path implements PathExpression, RelationshipPathExpression {
     }
 
     private String relationshipString(final Relationship rel) {
-        if (Direction.LEFT.equals(rel.getDir())) {
+        if (Direction.LEFT.equals(rel.getDirection())) {
             return String.format("<-%s-", rel.asString());
-        } else if (Direction.RIGHT.equals(rel.getDir())) {
+        } else if (Direction.RIGHT.equals(rel.getDirection())) {
             return String.format("-%s->", rel.asString());
         } else {
             return String.format("-%s-", rel.asString());

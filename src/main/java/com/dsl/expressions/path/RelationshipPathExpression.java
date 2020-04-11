@@ -9,25 +9,10 @@ public interface RelationshipPathExpression extends Expression {
     /**
      * Joins node.
      *
-     * @param alias the node alias.
-     * @param node  the node name.
      * @return PathExpression.
      */
-    PathExpression to(String alias, String node);
+    PathExpression to(String node);
 
-    /**
-     * Joins node.
-     *
-     * @param alias the node alias.
-     * @return PathExpression.
-     */
-    PathExpression to(String alias);
-
-    /**
-     * Joins node.
-     *
-     * @return PathExpression.
-     */
     PathExpression to();
 
     /**

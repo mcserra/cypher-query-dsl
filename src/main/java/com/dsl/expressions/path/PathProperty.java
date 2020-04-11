@@ -7,4 +7,5 @@ import com.dsl.AsString;
  */
 public interface PathProperty extends AsString {
     void addProperties(Object... props);
+    Direction getDirection();
 }
