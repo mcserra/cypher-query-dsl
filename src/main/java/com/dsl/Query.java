@@ -4,6 +4,7 @@ import com.dsl.clauses.ClauseBuilder;
 import com.dsl.clauses.CreateClause;
 import com.dsl.clauses.MatchClause;
 import com.dsl.clauses.WithClause;
+import com.dsl.clauses.linking.ClauseBuilderNewSyntax;
 import com.dsl.clauses.links.AfterMatch;
 import com.dsl.clauses.links.AfterWith;
 import com.dsl.expressions.aggregating.Average;
@@ -43,6 +44,14 @@ public class Query {
 
     public static AfterMatch match(PathExpression... expressions) {
         return new ClauseBuilder(new MatchClause(expressions));
+    }
+
+    public static com.dsl.clauses.linking.AfterMatch match() {
+        return new ClauseBuilderNewSyntax(new MatchClause());
+    }
+
+    public static com.dsl.clauses.linking.AfterMatch optMatch() {
+        return new ClauseBuilderNewSyntax(MatchClause.optMatch());
     }
 
     public static AfterMatch optMatch(PathExpression... expressions) {
