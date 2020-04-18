@@ -1,6 +1,5 @@
 package com.dsl.clauses.links;
 
-import com.dsl.clauses.links.AfterReturns;
 import com.dsl.expressions.param.SelectorExpression;
 
 public interface Returns {

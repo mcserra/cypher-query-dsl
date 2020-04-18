@@ -150,6 +150,23 @@ public class ClauseBuilderTests {
         Assertions.assertEquals("MATCH (n:Name {name: 'Fred'}), (s:Colour {colour: 'orange'}) CREATE (n:Name {name: 'Mark'}) RETURN n.name LIMIT 1", s);
     }
 
+    //ORDER BY
+    @Test
+    void orderByTest() {
+        String s = match(node("n:Name").props("name", "'Fred'"))
+            .with(select("n"))
+            .orderBy("n.name")
+            .returns(select("n").prop("name")).limit(1).asString();
+        Assertions.assertEquals("MATCH (n:Name {name: 'Fred'}) WITH n ORDER BY n.name RETURN n.name LIMIT 1", s);
+    }
 
+    @Test
+    void orderByWithSelectorTest() {
+        String s = match(node("n:Name").props("name", "'Fred'"))
+            .with(select("n"))
+            .orderBy(select("n").prop("name"))
+            .returns(select("n").prop("name")).orderBy("n.name").limit(1).asString();
+        Assertions.assertEquals("MATCH (n:Name {name: 'Fred'}) WITH n ORDER BY n.name RETURN n.name ORDER BY n.name LIMIT 1", s);
+    }
 
 }

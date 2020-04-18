@@ -5,12 +5,14 @@ import com.dsl.StringUtils;
 import com.dsl.clauses.links.AfterCreate;
 import com.dsl.clauses.links.AfterLimit;
 import com.dsl.clauses.links.AfterMatch;
+import com.dsl.clauses.links.AfterOrderBy;
 import com.dsl.clauses.links.AfterReturns;
 import com.dsl.clauses.links.AfterWhere;
 import com.dsl.clauses.links.AfterWith;
 import com.dsl.expressions.Expression;
 import com.dsl.expressions.logical.LogicalExpression;
 import com.dsl.expressions.param.FinalExpression;
+import com.dsl.expressions.param.Property;
 import com.dsl.expressions.param.Selector;
 import com.dsl.expressions.param.SelectorExpression;
 import com.dsl.expressions.param.Variable;
@@ -21,7 +23,7 @@ import java.util.Collection;
 import java.util.Objects;
 
 public class ClauseBuilder
-    implements AsString, AfterMatch, AfterWith, AfterWhere, AfterLimit, AfterReturns, AfterCreate {
+    implements AsString, AfterMatch, AfterWith, AfterWhere, AfterLimit, AfterReturns, AfterCreate, AfterOrderBy {
 
   private final Collection<Clause> clauses = new ArrayList<>();
 
@@ -78,8 +80,20 @@ public class ClauseBuilder
   }
 
   @Override
-  public AfterMatch create(PathExpression... e) {
+  public AfterCreate create(PathExpression... e) {
     clauses.add(new CreateClause(e));
+    return this;
+  }
+
+  @Override
+  public AfterOrderBy orderBy(String... properties) {
+    clauses.add(new OrderByClause(properties));
+    return this;
+  }
+
+  @Override
+  public AfterOrderBy orderBy(Property... properties) {
+    clauses.add(new OrderByClause(properties));
     return this;
   }
 
