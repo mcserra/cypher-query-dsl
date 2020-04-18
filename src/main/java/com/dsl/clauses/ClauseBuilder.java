@@ -2,12 +2,7 @@ package com.dsl.clauses;
 
 import com.dsl.AsString;
 import com.dsl.StringUtils;
-import com.dsl.clauses.links.AfterCreate;
-import com.dsl.clauses.links.AfterLimit;
-import com.dsl.clauses.links.AfterMatch;
-import com.dsl.clauses.links.AfterReturns;
-import com.dsl.clauses.links.AfterWhere;
-import com.dsl.clauses.links.AfterWith;
+import com.dsl.clauses.links.*;
 import com.dsl.expressions.Expression;
 import com.dsl.expressions.logical.LogicalExpression;
 import com.dsl.expressions.param.FinalExpression;
@@ -21,7 +16,7 @@ import java.util.Collection;
 import java.util.Objects;
 
 public class ClauseBuilder
-    implements AsString, AfterMatch, AfterWith, AfterWhere, AfterLimit, AfterReturns, AfterCreate {
+    implements AsString, AfterMatch, AfterWith, AfterWhere, AfterLimit, AfterReturns, AfterCreate, AfterSkip {
 
   private final Collection<Clause> clauses = new ArrayList<>();
 
@@ -80,6 +75,24 @@ public class ClauseBuilder
   @Override
   public AfterMatch create(PathExpression... e) {
     clauses.add(new CreateClause(e));
+    return this;
+  }
+
+  @Override
+  public AfterSkip skip(int e) {
+    clauses.add(new SkipClause(e));
+    return this;
+  }
+
+  @Override
+  public AfterSkip skip(Variable e) {
+    clauses.add(new SkipClause(e));
+    return this;
+  }
+
+  @Override
+  public AfterSkip skip(Expression e) {
+    clauses.add(new SkipClause(e));
     return this;
   }
 
