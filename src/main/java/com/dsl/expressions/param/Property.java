@@ -5,8 +5,12 @@ package com.dsl.expressions.param;
  */
 public class Property extends ParamExpression implements IdentifierExpression, SelectorExpression {
 
-    public Property(Selector value, Selector parent) {
+    public Property(final Selector value, final Selector parent) {
         super(parent, ".", value);
+    }
+
+    public Property(final String s) {
+        super(new Selector(s), "", new Selector(""));
     }
 
     @Override
