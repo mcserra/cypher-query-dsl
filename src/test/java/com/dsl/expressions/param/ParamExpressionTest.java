@@ -3,10 +3,6 @@ package com.dsl.expressions.param;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static com.dsl.Query.collect;
-import static com.dsl.Query.json;
-import static com.dsl.Query.select;
-
 public class ParamExpressionTest {
 
     @Test

@@ -10,7 +10,7 @@ public class PathExpressionTest {
 
     @Test
     void pathWithTwoNodesRight() {
-        String s = node("s", "Name").right().node("b").right().node("c:Person").asString();
+        String s = node("s:Name").right().node("b").right().node("c:Person").asString();
         Assertions.assertEquals("(s:Name)-->(b)-->(c:Person)", s);
     }
 
