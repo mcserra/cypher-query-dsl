@@ -11,7 +11,6 @@ import com.dsl.expressions.param.Variable;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static com.dsl.Query.node;
 import static com.dsl.Query.select;
 
 class ExpressionTest {

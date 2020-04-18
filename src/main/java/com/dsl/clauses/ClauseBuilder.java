@@ -1,6 +1,13 @@
-package com.dsl;
+package com.dsl.clauses;
 
-import com.dsl.clauses.*;
+import com.dsl.AsString;
+import com.dsl.StringUtils;
+import com.dsl.clauses.links.AfterCreate;
+import com.dsl.clauses.links.AfterLimit;
+import com.dsl.clauses.links.AfterMatch;
+import com.dsl.clauses.links.AfterReturns;
+import com.dsl.clauses.links.AfterWhere;
+import com.dsl.clauses.links.AfterWith;
 import com.dsl.expressions.Expression;
 import com.dsl.expressions.logical.LogicalExpression;
 import com.dsl.expressions.param.FinalExpression;
@@ -13,9 +20,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
-public class ClauseBuilder implements AsString, AfterMatch, AfterWith, AfterCondition, AfterLimit, AfterReturns {
+public class ClauseBuilder
+    implements AsString, AfterMatch, AfterWith, AfterWhere, AfterLimit, AfterReturns, AfterCreate {
 
-  private Collection<Clause> clauses = new ArrayList<>();
+  private final Collection<Clause> clauses = new ArrayList<>();
 
   public ClauseBuilder(Clause clause) {
     this.clauses.add(clause);
@@ -40,7 +48,7 @@ public class ClauseBuilder implements AsString, AfterMatch, AfterWith, AfterCond
   }
 
   @Override
-  public AfterCondition where(LogicalExpression... e) {
+  public AfterWhere where(LogicalExpression... e) {
     clauses.add(new WhereClause(e));
     return this;
   }
@@ -66,6 +74,12 @@ public class ClauseBuilder implements AsString, AfterMatch, AfterWith, AfterCond
   @Override
   public AfterLimit limit(int e) {
     clauses.add(new LimitClause(e));
+    return this;
+  }
+
+  @Override
+  public AfterMatch create(PathExpression... e) {
+    clauses.add(new CreateClause(e));
     return this;
   }
 

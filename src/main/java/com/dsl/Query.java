@@ -1,7 +1,11 @@
 package com.dsl;
 
+import com.dsl.clauses.ClauseBuilder;
+import com.dsl.clauses.CreateClause;
 import com.dsl.clauses.MatchClause;
 import com.dsl.clauses.WithClause;
+import com.dsl.clauses.links.AfterMatch;
+import com.dsl.clauses.links.AfterWith;
 import com.dsl.expressions.aggregating.Average;
 import com.dsl.expressions.aggregating.Collect;
 import com.dsl.expressions.aggregating.Count;
@@ -31,6 +35,10 @@ import java.time.LocalDate;
 public class Query {
 
     private Query() {
+    }
+
+    public static AfterMatch create(PathExpression... expressions) {
+        return new ClauseBuilder(new CreateClause(expressions));
     }
 
     public static AfterMatch match(PathExpression... expressions) {
@@ -117,16 +125,12 @@ public class Query {
         return new Literal(literal);
     }
 
-    public static PathExpression node(String alias, String name) {
-        return new Path(new Node(alias, name));
-    }
-
-    public static PathExpression node(String node) {
-        return node(node, "");
+    public static PathExpression node(String selector) {
+        return new Path(new Node(selector, ""));
     }
 
     public static PathExpression node() {
-        return node("", "");
+        return node("");
     }
 
     public static Not not(LogicalExpression e) {

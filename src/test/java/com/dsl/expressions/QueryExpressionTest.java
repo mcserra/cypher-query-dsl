@@ -77,31 +77,31 @@ public class QueryExpressionTest {
     //Node
     @Test
     void testNode() {
-        String s = node("s", "Series").right().rel("ht:HAS_TYPE").to("t:Type").asString();
+        String s = node("s:Series").right().rel("ht:HAS_TYPE").to("t:Type").asString();
         Assertions.assertEquals("(s:Series)-[ht:HAS_TYPE]->(t:Type)", s);
     }
 
     @Test
     void testNodeWithProperty() {
-        String s = node("s", "Series").props("foo", "bar", "kid", "boy").right().rel("ht:HAS_TYPE").to("t:Type").asString();
+        String s = node("s:Series").props("foo", "bar", "kid", "boy").right().rel("ht:HAS_TYPE").to("t:Type").asString();
         Assertions.assertEquals("(s:Series {foo: bar, kid: boy})-[ht:HAS_TYPE]->(t:Type)", s);
     }
 
     @Test
     void testNodeWithDiffProperty() {
-        String s = node("s", "Series").props("foo", "bar").props("kid", "boy").right().rel("ht:HAS_TYPE").to("t:Type").asString();
+        String s = node("s:Series").props("foo", "bar").props("kid", "boy").right().rel("ht:HAS_TYPE").to("t:Type").asString();
         Assertions.assertEquals("(s:Series {foo: bar, kid: boy})-[ht:HAS_TYPE]->(t:Type)", s);
     }
 
     @Test
     void testRelationshipWithProperty() {
-        String s = node("s", "Series").right().rel("ht:HAS_TYPE").relProps("foo", "bar", "kid", "boy").to("t:Type").asString();
+        String s = node("s:Series").right().rel("ht:HAS_TYPE").relProps("foo", "bar", "kid", "boy").to("t:Type").asString();
         Assertions.assertEquals("(s:Series)-[ht:HAS_TYPE {foo: bar, kid: boy}]->(t:Type)", s);
     }
 
     @Test
     void collectTest() {
-        String s = match(node("n", "Person")).returns(collect(select("n").prop("age"))).asString();
+        String s = match(node("n:Person")).returns(collect(select("n").prop("age"))).asString();
         Assertions.assertEquals("MATCH (n:Person) RETURN collect(n.age)", s);
     }
 
@@ -148,13 +148,13 @@ public class QueryExpressionTest {
 
     @Test
     void percentileContTest() {
-        String s = match(node("n", "Person")).returns(percentileCont(0.4, select("n").prop("age"))).asString();
+        String s = match(node("n:Person")).returns(percentileCont(0.4, select("n").prop("age"))).asString();
         Assertions.assertEquals("MATCH (n:Person) RETURN percentileCont(n.age, 0.4)", s);
     }
 
     @Test
     void percentileDiscTest() {
-        String s = match(node("n", "Person")).returns(percentileDisc(0.5, select("n").prop("age"))).asString();
+        String s = match(node("n:Person")).returns(percentileDisc(0.5, select("n").prop("age"))).asString();
         Assertions.assertEquals("MATCH (n:Person) RETURN percentileDisc(n.age, 0.5)", s);
     }
 
@@ -172,13 +172,13 @@ public class QueryExpressionTest {
 
     @Test
     void sumTest() {
-        String s = match(node("n", "Person")).returns(sum(select("n").prop("age"))).asString();
+        String s = match(node("n:Person")).returns(sum(select("n").prop("age"))).asString();
         Assertions.assertEquals("MATCH (n:Person) RETURN sum(n.age)", s);
     }
 
     @Test
     void inWithVar() {
-        String s = match(node("n", "Person")).where(select("n").in(var("persons"))).returns(sum(select("n").prop("age"))).asString();
+        String s = match(node("n:Person")).where(select("n").in(var("persons"))).returns(sum(select("n").prop("age"))).asString();
         Assertions.assertEquals("MATCH (n:Person) WHERE n IN $persons RETURN sum(n.age)", s);
     }
 
