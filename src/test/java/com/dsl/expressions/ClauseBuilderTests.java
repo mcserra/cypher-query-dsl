@@ -109,6 +109,25 @@ public class ClauseBuilderTests {
     Assertions.assertThrows(UnsupportedOperationException.class, () -> with(literal(1).as("x")).returns(1).asString());
   }
 
+  // SKIP
+  @Test
+  void skipWithInt() {
+    String s = match(node("n")).returns(select("n").prop("name")).skip(1).limit(1).asString();
+    Assertions.assertEquals("MATCH (n) RETURN n.name SKIP 1 LIMIT 1", s);
+  }
+
+  @Test
+  void skipWithLiteral() {
+    String s = match(node("n")).returns(select("n").prop("name")).skip(literal(1)).limit(literal(1)).asString();
+    Assertions.assertEquals("MATCH (n) RETURN n.name SKIP 1 LIMIT 1", s);
+  }
+
+  @Test
+  void skipWithVariable() {
+    String s = match(node("s")).with(select("s")).skip(var("skip")).limit(var("limit")).returns("s").asString();
+    Assertions.assertEquals("MATCH (s) WITH s SKIP $skip LIMIT $limit RETURN s", s);
+  }
+
   // LIMIT
   @Test
   void limitWithInt() {
@@ -144,22 +163,23 @@ public class ClauseBuilderTests {
     Assertions.assertEquals("MATCH (n:Name {name: 'Fred'}), (s:Colour {colour: 'orange'}) CREATE (n:Name {name: 'Mark'}) RETURN n.name LIMIT 1", s);
   }
 
-  // SKIP
+  //ORDER BY
   @Test
-  void skipWithInt() {
-    String s = match(node("n")).returns(select("n").prop("name")).skip(1).limit(1).asString();
-    Assertions.assertEquals("MATCH (n) RETURN n.name SKIP 1 LIMIT 1", s);
+  void orderByTest() {
+    String s = match(node("n:Name").props("name", "'Fred'"))
+        .with(select("n"))
+        .orderBy("n.name")
+        .returns(select("n").prop("name")).limit(1).asString();
+    Assertions.assertEquals("MATCH (n:Name {name: 'Fred'}) WITH n ORDER BY n.name RETURN n.name LIMIT 1", s);
   }
 
   @Test
-  void skipWithLiteral() {
-    String s = match(node("n")).returns(select("n").prop("name")).skip(literal(1)).limit(literal(1)).asString();
-    Assertions.assertEquals("MATCH (n) RETURN n.name SKIP 1 LIMIT 1", s);
+  void orderByWithSelectorTest() {
+    String s = match(node("n:Name").props("name", "'Fred'"))
+        .with(select("n"))
+        .orderBy(select("n").prop("name"))
+        .returns(select("n").prop("name")).orderBy("n.name").limit(1).asString();
+    Assertions.assertEquals("MATCH (n:Name {name: 'Fred'}) WITH n ORDER BY n.name RETURN n.name ORDER BY n.name LIMIT 1", s);
   }
 
-  @Test
-  void skipWithVariable() {
-    String s = match(node("s")).with(select("s")).skip(var("skip")).limit(var("limit")).returns("s").asString();
-    Assertions.assertEquals("MATCH (s) WITH s SKIP $skip LIMIT $limit RETURN s", s);
-  }
 }
