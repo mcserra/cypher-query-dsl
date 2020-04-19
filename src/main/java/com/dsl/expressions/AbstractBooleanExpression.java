@@ -2,9 +2,8 @@ package com.dsl.expressions;
 
 import com.dsl.expressions.bool.BooleanExpression;
 import com.dsl.expressions.bool.In;
-import com.dsl.expressions.logical.And;
+import com.dsl.expressions.logical.ConditionalAbstractExpression;
 import com.dsl.expressions.logical.LogicalExpression;
-import com.dsl.expressions.logical.Or;
 import com.dsl.expressions.param.As;
 import com.dsl.expressions.param.FinalExpression;
 import com.dsl.expressions.param.Literal;
@@ -14,8 +13,8 @@ import com.dsl.expressions.param.Variable;
 /**
  * Common methods for all expressions
  */
-public abstract class AbstractBooleanExpression implements BooleanExpression, LogicalExpression,
-    SelectorExpression {
+public abstract class AbstractBooleanExpression extends ConditionalAbstractExpression implements BooleanExpression,
+    SelectorExpression, LogicalExpression {
 
     @Override
     public LogicalExpression eq(Object o) {
@@ -95,13 +94,5 @@ public abstract class AbstractBooleanExpression implements BooleanExpression, Lo
     @Override
     public LogicalExpression in(Variable o) {
         return new In(this, o);
-    }
-
-    public LogicalExpression and(LogicalExpression expression) {
-        return new And(this, expression);
-    }
-
-    public LogicalExpression or(LogicalExpression expression) {
-        return new Or(this, expression);
     }
 }

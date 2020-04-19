@@ -1,11 +1,11 @@
 package com.dsl.expressions.path;
 
-import com.dsl.expressions.Expression;
+import com.dsl.expressions.logical.LogicalExpression;
 
 /**
  * In query languages, path expressions identify an object by describing how to navigate to it in some graph of objects.
  */
-public interface PathExpression extends Expression {
+public interface PathExpression extends LogicalExpression {
 
     PathExpression node(String node);
 

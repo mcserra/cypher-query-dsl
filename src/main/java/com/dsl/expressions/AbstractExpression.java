@@ -1,7 +1,5 @@
 package com.dsl.expressions;
 
-import com.dsl.AsString;
-
 /**
  * Represents an expression, with the right and left side expression and the operator.
  * If no operator or no right expression exists, than this represents an ExpressionParameter.
