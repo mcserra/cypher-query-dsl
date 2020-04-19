@@ -6,10 +6,10 @@ package com.dsl.expressions.path;
  */
 public class Relationship implements PathProperty {
 
-    private String alias;
-    private String nodeName;
-    private Direction direction;
-    private GraphProperties properties;
+    private final String alias;
+    private final String nodeName;
+    private final Direction direction;
+    private final GraphProperties properties;
 
     public Relationship(String alias, String nodeName, Direction direction) {
         this.alias = alias;

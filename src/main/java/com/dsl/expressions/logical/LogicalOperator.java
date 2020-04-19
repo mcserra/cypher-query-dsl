@@ -6,5 +6,6 @@ package com.dsl.expressions.logical;
 public enum LogicalOperator {
     AND,
     OR,
-    NOT
+    NOT,
+    XOR
 }
