@@ -46,6 +46,10 @@ public class Query {
         return new ClauseBuilder(new MatchClause(expressions));
     }
 
+    public static com.dsl.clauses.linking.AfterWith with() {
+        return new ClauseBuilderNewSyntax(new WithClause());
+    }
+
     public static com.dsl.clauses.linking.AfterMatch match() {
         return new ClauseBuilderNewSyntax(new MatchClause());
     }

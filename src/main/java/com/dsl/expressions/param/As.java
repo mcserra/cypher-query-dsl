@@ -4,8 +4,8 @@ package com.dsl.expressions.param;
  * Alias of a selector. The expression is final.
  */
 public class As implements FinalExpression {
-    private SelectorExpression expression;
-    private String selector;
+    private final SelectorExpression expression;
+    private final String selector;
 
     public As(String selector, SelectorExpression expression) {
         this.selector = selector;
