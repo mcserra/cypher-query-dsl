@@ -1,6 +1,7 @@
 package com.dsl.expressions.path;
 
 import com.dsl.expressions.Expression;
+import com.dsl.expressions.param.Variable;
 
 /**
  * In query languages, path expressions identify an object by describing how to navigate to it in some graph of objects.
@@ -38,4 +39,12 @@ public interface PathExpression extends Expression {
      * @return PathExpression
      */
     PathExpression props(Object... o);
+
+
+    /**
+     * Assign PathExpression into a Variable.
+     * @param name the variable's name.
+     * @return Variable
+     */
+    VariablePath assignTo(String name);
 }
