@@ -10,7 +10,7 @@ import java.util.Map;
  * Properties on vertices or edges.
  */
 public class GraphProperties implements AsString {
-    private Map<String, Object> properties;
+    private final Map<String, Object> properties;
 
     public GraphProperties() {
         properties = new LinkedHashMap<>();

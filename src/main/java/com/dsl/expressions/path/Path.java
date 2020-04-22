@@ -1,6 +1,6 @@
 package com.dsl.expressions.path;
 
-import com.dsl.expressions.param.Variable;
+import com.dsl.expressions.logical.ConditionalAbstractExpression;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.Optional;
 /**
  * In graph theory, a path in a graph is a finite or infinite sequence of edges which joins a sequence of vertices.
  */
-public class Path implements PathExpression, RelationshipPathExpression {
+public class Path extends ConditionalAbstractExpression implements PathExpression, RelationshipPathExpression {
 
   private final List<PathProperty> e = new ArrayList<>();
   private Direction lastDir = Direction.NONE;

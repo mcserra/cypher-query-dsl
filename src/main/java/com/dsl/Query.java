@@ -149,4 +149,8 @@ public class Query {
     public static Not not(LogicalExpression e) {
         return new Not(e);
     }
+
+    public static Not not(String e) {
+        return new Not(e);
+    }
 }
