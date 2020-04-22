@@ -4,18 +4,21 @@ import com.dsl.AsString;
 import com.dsl.StringUtils;
 import com.dsl.clauses.Clause;
 import com.dsl.clauses.MatchClause;
+import com.dsl.clauses.ReturnClause;
 import com.dsl.clauses.WhereClause;
 import com.dsl.clauses.WithClause;
+import com.dsl.expressions.Expression;
 import com.dsl.expressions.logical.LogicalExpression;
 import com.dsl.expressions.logical.LogicalOperator;
 import com.dsl.expressions.param.FinalExpression;
 import com.dsl.expressions.param.Selector;
+import com.dsl.expressions.path.Path;
 import com.dsl.expressions.path.PathExpression;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClauseBuilderNewSyntax implements AfterMatch, AsString, AfterWith, WithAlias, AfterWhere {
+public class ClauseBuilderNewSyntax implements AfterMatch, AsString, AfterWith, WithAlias, AfterWhere, AfterReturns {
 
     private final List<Clause> clauses = new ArrayList<>();
 
@@ -122,6 +125,38 @@ public class ClauseBuilderNewSyntax implements AfterMatch, AsString, AfterWith, 
     @Override
     public AfterWhere xor(LogicalExpression expression) {
         getLast(WhereClause.class).addExpression(expression, LogicalOperator.XOR);
+        return this;
+    }
+
+    @Override
+    public AfterReturns returns(Expression... e) {
+        clauses.add(new ReturnClause(e));
+        return this;
+    }
+
+    @Override
+    public AfterReturns returns(String... e) {
+        Selector[] ls = new Selector[e.length];
+        for (int i = 0; i < e.length; i++) {
+            ls[i] = new Selector(e[i]);
+        }
+        this.clauses.add(new ReturnClause(ls));
+        return this;
+    }
+
+    @Override
+    public AfterReturns returns(Object... e) {
+        Expression[] ls = new Expression[e.length];
+        for (int i = 0; i < e.length; i++) {
+            if (e[i] instanceof String) {
+                ls[i] = new Selector((String) e[i]);
+            } else if (e[i] instanceof Expression) {
+                ls[i] = (Expression) e[i];
+            } else {
+                throw new UnsupportedOperationException();
+            }
+        }
+        this.clauses.add(new ReturnClause(ls));
         return this;
     }
 
