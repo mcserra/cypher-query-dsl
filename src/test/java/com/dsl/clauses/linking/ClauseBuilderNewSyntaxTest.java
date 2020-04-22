@@ -130,4 +130,50 @@ class ClauseBuilderNewSyntaxTest {
                 " OR (n.name = 'Sandra' XOR n.age < 30)", query);
     }
 
+    @Test
+    void returnsTest() {
+        String query =
+            match()
+                .path(node("s"))
+                .where(select("s.name").eq(literal("Foo")))
+                .and("s.code in ['Foo', 'Bar']")
+                .returns("s")
+                .asString();
+
+        Assertions.assertEquals("MATCH (s) WHERE s.name = 'Foo' AND s.code in ['Foo', 'Bar'] RETURN s", query);
+    }
+
+    @Test
+    void returnsNodeProperty() {
+        String query =
+            match()
+                .path(node("n").props("name", "'A'"))
+                .returns("n.name")
+                .asString();
+
+        Assertions.assertEquals("MATCH (n {name: 'A'}) RETURN n.name", query);
+    }
+
+    @Test
+    void returnsWithAlias() {
+        String query =
+            match()
+                .path(node("n").props("name", "'A'"))
+                .returns(select("n").prop("name").as("something"))
+                .asString();
+
+        Assertions.assertEquals("MATCH (n {name: 'A'}) RETURN n.name AS something", query);
+    }
+
+    @Test
+    void returnsOtherExpressions() {
+        String query =
+            match()
+                .path(node("a").props("name", "'A'"))
+                .returns(select("a").prop("age").bt(30), "\"I'm a literal\"", node("a").right().node())
+                .asString();
+
+        Assertions.assertEquals("MATCH (a {name: 'A'}) RETURN a.age > 30, \"I'm a literal\", (a)-->()", query);
+    }
+
 }
