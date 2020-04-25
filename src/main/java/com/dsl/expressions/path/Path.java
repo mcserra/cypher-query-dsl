@@ -1,6 +1,7 @@
 package com.dsl.expressions.path;
 
 import com.dsl.expressions.logical.ConditionalAbstractExpression;
+import com.dsl.variables.Variable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,8 +86,8 @@ public class Path extends ConditionalAbstractExpression implements PathExpressio
   }
 
   @Override
-  public VariablePath assignTo(String name) {
-    return new VariablePath(name, this);
+  public Variable<PathExpression> assignTo(String name) {
+    return new Variable(name, this);
   }
 
   private Direction popDirection() {

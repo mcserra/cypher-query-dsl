@@ -1,6 +1,7 @@
 package com.dsl.expressions.path;
 
 import com.dsl.expressions.logical.LogicalExpression;
+import com.dsl.variables.Variable;
 
 
 /**
@@ -47,5 +48,5 @@ public interface PathExpression extends LogicalExpression {
    * @param name the variable's name.
    * @return Variable
    */
-  VariablePath assignTo(String name);
+  Variable<PathExpression> assignTo(String name);
 }

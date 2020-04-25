@@ -1,6 +1,5 @@
 package com.dsl.expressions;
 
-import com.dsl.expressions.path.VariablePath;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -98,12 +97,6 @@ public class QueryExpressionTest {
   void testRelationshipWithProperty() {
     String s = node("s:Series").right().rel("ht:HAS_TYPE").relProps("foo", "bar", "kid", "boy").to("t:Type").asString();
     Assertions.assertEquals("(s:Series)-[ht:HAS_TYPE {foo: bar, kid: boy}]->(t:Type)", s);
-  }
-
-  @Test
-  void testAssignPathToVariable() {
-    VariablePath p = node("a").right().node("b").right().node("c").assignTo("p");
-    Assertions.assertEquals("p=(a)-->(b)-->(c)", p.asString());
   }
 
   @Test
