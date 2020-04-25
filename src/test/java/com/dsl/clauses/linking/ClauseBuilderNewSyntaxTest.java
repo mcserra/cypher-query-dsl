@@ -9,6 +9,7 @@ import static com.dsl.Query.node;
 import static com.dsl.Query.not;
 import static com.dsl.Query.optMatch;
 import static com.dsl.Query.select;
+import static com.dsl.Query.var;
 import static com.dsl.Query.with;
 
 class ClauseBuilderNewSyntaxTest {
@@ -176,4 +177,82 @@ class ClauseBuilderNewSyntaxTest {
         Assertions.assertEquals("MATCH (a {name: 'A'}) RETURN a.age > 30, \"I'm a literal\", (a)-->()", query);
     }
 
+    //OrderBy
+    @Test
+    void orderByTest() {
+        String s = match()
+            .path(node("n:Name").props("name", "'Fred'"))
+            .with()
+            .select("n")
+            .orderBy("n.name")
+            .returns(select("n").prop("name")).limit(1).asString();
+        Assertions.assertEquals("MATCH (n:Name {name: 'Fred'}) WITH n ORDER BY n.name RETURN n.name LIMIT 1", s);
+    }
+
+    @Test
+    void orderByWithSelectorTest() {
+        String s = match()
+            .path(node("n:Name").props("name", "'Fred'"))
+            .with()
+            .select(select("n"))
+            .orderBy(select("n").prop("name"))
+            .returns(select("n").prop("name")).orderBy("n.name").limit(1).asString();
+        Assertions.assertEquals("MATCH (n:Name {name: 'Fred'}) WITH n ORDER BY n.name RETURN n.name ORDER BY n.name LIMIT 1", s);
+    }
+
+    // SKIP
+    @Test
+    void skipWithInt() {
+        String s = match()
+            .path(node("n"))
+            .returns(select("n").prop("name"))
+            .skip(1)
+            .limit(1)
+            .asString();
+        Assertions.assertEquals("MATCH (n) RETURN n.name SKIP 1 LIMIT 1", s);
+    }
+
+    @Test
+    void skipWithLiteral() {
+        String s =
+            match()
+                .path(node("n"))
+            .returns(select("n").prop("name"))
+                .skip(literal(1))
+                .limit(literal(1)).asString();
+        Assertions.assertEquals("MATCH (n) RETURN n.name SKIP 1 LIMIT 1", s);
+    }
+
+    @Test
+    void skipWithVariable() {
+        String s = match()
+            .path(node("s"))
+            .with()
+            .select(select("s"))
+            .skip(var("skip")).limit(var("limit")).returns("s").asString();
+        Assertions.assertEquals("MATCH (s) WITH s SKIP $skip LIMIT $limit RETURN s", s);
+    }
+
+    // LIMIT
+    @Test
+    void limitWithInt() {
+        String s = match()
+            .path(node("n"))
+            .returns(select("n").prop("name")).limit(1).asString();
+        Assertions.assertEquals("MATCH (n) RETURN n.name LIMIT 1", s);
+    }
+
+    @Test
+    void limitWithLiteral() {
+        String s = match()
+            .path(node("n")).returns(select("n").prop("name")).limit(literal(1)).asString();
+        Assertions.assertEquals("MATCH (n) RETURN n.name LIMIT 1", s);
+    }
+
+    @Test
+    void limitWithVariable() {
+        String s = match()
+            .path(node("s")).with().select("s").limit(var("limit")).returns("s").asString();
+        Assertions.assertEquals("MATCH (s) WITH s LIMIT $limit RETURN s", s);
+    }
 }
