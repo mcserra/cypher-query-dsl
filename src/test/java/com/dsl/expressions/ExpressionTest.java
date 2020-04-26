@@ -132,4 +132,10 @@ class ExpressionTest {
         Assertions.assertEquals("'Peter' CONTAINS 'ete'", a.asString());
     }
 
+    @Test
+    void contains2() {
+        LogicalExpression a = new Literal("Johanna").contains(new Not(new Literal("ete")));
+        Assertions.assertEquals("'Johanna' CONTAINS NOT ('ete')", a.asString());
+    }
+
 }
