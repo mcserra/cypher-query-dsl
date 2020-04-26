@@ -3,22 +3,27 @@ package com.dsl.clauses.linking;
 import com.dsl.AsString;
 import com.dsl.StringUtils;
 import com.dsl.clauses.Clause;
+import com.dsl.clauses.LimitClause;
 import com.dsl.clauses.MatchClause;
+import com.dsl.clauses.OrderByClause;
 import com.dsl.clauses.ReturnClause;
+import com.dsl.clauses.SkipClause;
 import com.dsl.clauses.WhereClause;
 import com.dsl.clauses.WithClause;
 import com.dsl.expressions.Expression;
 import com.dsl.expressions.logical.LogicalExpression;
 import com.dsl.expressions.logical.LogicalOperator;
 import com.dsl.expressions.param.FinalExpression;
+import com.dsl.expressions.param.Property;
 import com.dsl.expressions.param.Selector;
-import com.dsl.expressions.path.Path;
+import com.dsl.expressions.param.Variable;
 import com.dsl.expressions.path.PathExpression;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClauseBuilderNewSyntax implements AfterMatch, AsString, AfterWith, WithAlias, AfterWhere, AfterReturns {
+public class ClauseBuilderNewSyntax 
+    implements AfterMatch, AsString, AfterWith, WithAlias, AfterWhere, AfterReturns, AfterLimit, AfterSkip, AfterOrderBy {
 
     private final List<Clause> clauses = new ArrayList<>();
 
@@ -157,6 +162,54 @@ public class ClauseBuilderNewSyntax implements AfterMatch, AsString, AfterWith, 
             }
         }
         this.clauses.add(new ReturnClause(ls));
+        return this;
+    }
+
+    @Override
+    public AfterLimit limit(int numElements) {
+        clauses.add(new LimitClause(numElements));
+        return this;
+    }
+
+    @Override
+    public AfterLimit limit(Variable variable) {
+        clauses.add(new LimitClause(variable));
+        return this;
+    }
+
+    @Override
+    public AfterLimit limit(Expression expression) {
+        clauses.add(new LimitClause(expression));
+        return this;
+    }
+
+    @Override
+    public AfterOrderBy orderBy(String... properties) {
+        clauses.add(new OrderByClause(properties));
+        return this;
+    }
+
+    @Override
+    public AfterOrderBy orderBy(Property... properties) {
+        clauses.add(new OrderByClause(properties));
+        return this;
+    }
+
+    @Override
+    public AfterSkip skip(int numElements) {
+        clauses.add(new SkipClause(numElements));
+        return this;
+    }
+
+    @Override
+    public AfterSkip skip(Variable variable) {
+        clauses.add(new SkipClause(variable));
+        return this;
+    }
+
+    @Override
+    public AfterSkip skip(Expression expression) {
+        clauses.add(new SkipClause(expression));
         return this;
     }
 
