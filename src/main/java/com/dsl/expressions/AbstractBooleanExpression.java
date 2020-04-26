@@ -1,6 +1,7 @@
 package com.dsl.expressions;
 
 import com.dsl.expressions.bool.BooleanExpression;
+import com.dsl.expressions.bool.Contains;
 import com.dsl.expressions.bool.In;
 import com.dsl.expressions.logical.ConditionalAbstractExpression;
 import com.dsl.expressions.logical.LogicalExpression;
@@ -95,4 +96,15 @@ public abstract class AbstractBooleanExpression extends ConditionalAbstractExpre
     public LogicalExpression in(Variable o) {
         return new In(this, o);
     }
+
+    @Override
+    public LogicalExpression contains(Object o){
+        return new Contains(this, new Literal(o));
+    }
+
+    @Override
+    public LogicalExpression contains(Expression expression){
+        return new Contains(this, expression);
+    }
+
 }

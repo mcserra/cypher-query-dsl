@@ -126,4 +126,10 @@ class ExpressionTest {
         Assertions.assertEquals("date.validFrom", a.asString());
     }
 
+    @Test
+    void contains(){
+        LogicalExpression a = new Literal("Peter").contains("ete");
+        Assertions.assertEquals("'Peter' CONTAINS 'ete'", a.asString());
+    }
+
 }
