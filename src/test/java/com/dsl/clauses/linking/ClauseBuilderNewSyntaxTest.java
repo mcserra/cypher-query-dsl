@@ -3,14 +3,7 @@ package com.dsl.clauses.linking;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static com.dsl.Query.literal;
-import static com.dsl.Query.match;
-import static com.dsl.Query.node;
-import static com.dsl.Query.not;
-import static com.dsl.Query.optMatch;
-import static com.dsl.Query.select;
-import static com.dsl.Query.var;
-import static com.dsl.Query.with;
+import static com.dsl.Query.*;
 
 class ClauseBuilderNewSyntaxTest {
 
@@ -254,5 +247,52 @@ class ClauseBuilderNewSyntaxTest {
         String s = match()
             .path(node("s")).with().select("s").limit(var("limit")).returns("s").asString();
         Assertions.assertEquals("MATCH (s) WITH s LIMIT $limit RETURN s", s);
+    }
+
+    //returns
+    @Test
+    void returnString() {
+        String s = with().select(literal(1).as("x")).returns("x").asString();
+        Assertions.assertEquals("WITH 1 AS x RETURN x", s);
+    }
+
+    @Test
+    void returnStringAndExpression() {
+        String s = with().select(literal(1).as("x")).returns("x", select("x.name").as("a")).asString();
+        Assertions.assertEquals("WITH 1 AS x RETURN x, x.name AS a", s);
+    }
+
+    @Test
+    void returnExpressionAliased() {
+        String s = with().select(literal(1).as("x")).returns(select("x").as("a")).asString();
+        Assertions.assertEquals("WITH 1 AS x RETURN x AS a", s);
+    }
+
+    @Test
+    void returnExpressionProps() {
+        String s = with().select(literal(1).as("x")).returns(select("x").prop("name")).asString();
+        Assertions.assertEquals("WITH 1 AS x RETURN x.name", s);
+    }
+
+    @Test
+    void returnsWithWrongType() {
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> with().select(literal(1).as("x")).returns(1).asString());
+    }
+
+    @Test
+    void createMultiplePaths() {
+        String s = create()
+            .exp(node("n:Name").props("name", "'Fred'"))
+            .exp("(s:Colour {colour: 'orange'})")
+            .returns(select("n").prop("name")).limit(1).asString();
+        Assertions.assertEquals("CREATE (n:Name {name: 'Fred'}), (s:Colour {colour: 'orange'}) RETURN n.name LIMIT 1", s);
+    }
+
+    @Test
+    void createAfterClause() {
+        String s = match(node("n:Name").props("name", "'Fred'"), node("s:Colour").props("colour", "'orange'"))
+            .create(node("n:Name").props("name", "'Mark'"))
+            .returns(select("n").prop("name")).limit(1).asString();
+        Assertions.assertEquals("MATCH (n:Name {name: 'Fred'}), (s:Colour {colour: 'orange'}) CREATE (n:Name {name: 'Mark'}) RETURN n.name LIMIT 1", s);
     }
 }
