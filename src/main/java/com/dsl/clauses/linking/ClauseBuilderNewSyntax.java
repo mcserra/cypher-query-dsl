@@ -3,6 +3,7 @@ package com.dsl.clauses.linking;
 import com.dsl.AsString;
 import com.dsl.StringUtils;
 import com.dsl.clauses.Clause;
+import com.dsl.clauses.CreateClause;
 import com.dsl.clauses.LimitClause;
 import com.dsl.clauses.MatchClause;
 import com.dsl.clauses.OrderByClause;
@@ -23,7 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ClauseBuilderNewSyntax 
-    implements AfterMatch, AsString, AfterWith, WithAlias, AfterWhere, AfterReturns, AfterLimit, AfterSkip, AfterOrderBy {
+    implements AfterMatch, AsString, AfterWith, WithAlias,
+    AfterWhere, AfterReturns, AfterLimit, AfterSkip, AfterOrderBy,
+    AfterCreate {
 
     private final List<Clause> clauses = new ArrayList<>();
 
@@ -38,8 +41,26 @@ public class ClauseBuilderNewSyntax
     }
 
     @Override
-    public AfterMatch path(final String expression) {
-        getLast(MatchClause.class).addExpression(expression);
+    public AfterMatch path(final String pathExpression) {
+        getLast(MatchClause.class).addExpression(pathExpression);
+        return this;
+    }
+
+    @Override
+    public AfterCreate exp(PathExpression pathExpression) {
+        getLast(CreateClause.class).addExpression(pathExpression);
+        return this;
+    }
+
+    @Override
+    public AfterCreate create(PathExpression... pathExpressions) {
+        clauses.add(new CreateClause(pathExpressions));
+        return this;
+    }
+
+    @Override
+    public AfterCreate exp(String pathExpression) {
+        getLast(CreateClause.class).addExpression(pathExpression);
         return this;
     }
 
@@ -62,14 +83,14 @@ public class ClauseBuilderNewSyntax
     }
 
     @Override
-    public AfterMatch match() {
-        clauses.add(new MatchClause());
+    public AfterMatch match(PathExpression... pathExpressions) {
+        clauses.add(new MatchClause(pathExpressions));
         return this;
     }
 
     @Override
-    public AfterMatch optMatch() {
-        clauses.add(MatchClause.optMatch());
+    public AfterMatch optMatch(PathExpression... pathExpressions) {
+        clauses.add(MatchClause.optMatch(pathExpressions));
         return this;
     }
 

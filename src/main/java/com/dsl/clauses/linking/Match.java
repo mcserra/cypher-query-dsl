@@ -1,7 +1,9 @@
 package com.dsl.clauses.linking;
 
-public interface Match {
-    AfterMatch match();
+import com.dsl.expressions.path.PathExpression;
 
-    AfterMatch optMatch();
+public interface Match {
+    AfterMatch match(PathExpression... pathExpressions);
+
+    AfterMatch optMatch(PathExpression... pathExpressions);
 }

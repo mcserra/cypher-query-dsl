@@ -1,4 +1,4 @@
-package com.dsl.clauses.links;
+package com.dsl.clauses.linking;
 
 import com.dsl.expressions.path.PathExpression;
 

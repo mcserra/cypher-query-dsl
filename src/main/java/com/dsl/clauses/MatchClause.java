@@ -24,8 +24,8 @@ public class MatchClause implements AsString, Clause {
         Collections.addAll(this.pathExpressions, pathExpressions);
     }
 
-    public static MatchClause optMatch() {
-        return new MatchClause(true);
+    public static MatchClause optMatch(final PathExpression... pathExpression) {
+        return new MatchClause(true, pathExpression);
     }
 
     public void addExpression(final PathExpression e) {
