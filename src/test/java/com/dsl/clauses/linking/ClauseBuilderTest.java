@@ -5,14 +5,14 @@ import org.junit.jupiter.api.Test;
 
 import static com.dsl.Query.*;
 
-class ClauseBuilderNewSyntaxTest {
+class ClauseBuilderTest {
 
     //Match
     @Test
     void testMatchStart() {
         String query = match()
-            .path(node("n:Name"))
-            .path(node("p:Person").right().node("n"))
+            .matchPath(node("n:Name"))
+            .matchPath(node("p:Person").right().node("n"))
             .asString();
 
         Assertions.assertEquals("MATCH (n:Name), (p:Person)-->(n)", query);
@@ -21,8 +21,8 @@ class ClauseBuilderNewSyntaxTest {
     @Test
     void optMatchStart() {
         String query = optMatch()
-            .path(node("n:Name"))
-            .path(node("p:Person").right().node("n"))
+            .matchPath(node("n:Name"))
+            .matchPath(node("p:Person").right().node("n"))
             .asString();
 
         Assertions.assertEquals("OPTIONAL MATCH (n:Name), (p:Person)-->(n)", query);
@@ -32,7 +32,7 @@ class ClauseBuilderNewSyntaxTest {
     void withTest() {
         String query =
             match()
-                .path(node("n:Name"))
+                .matchPath(node("n:Name"))
                 .with()
                 .select("n.name").as("name")
                 .asString();
@@ -46,9 +46,9 @@ class ClauseBuilderNewSyntaxTest {
             with()
                 .select(select("9"))
                 .optMatch()
-                .path(node("n"))
+                .matchPath(node("n"))
                 .match()
-                .path(node("k"))
+                .matchPath(node("k"))
                 .asString();
 
         Assertions.assertEquals("WITH 9 OPTIONAL MATCH (n) MATCH (k)", query);
@@ -58,7 +58,7 @@ class ClauseBuilderNewSyntaxTest {
     void whereTest() {
         String query =
             match()
-                .path(node("s"))
+                .matchPath(node("s"))
                 .where(select("s.name").eq(literal("Foo")))
                 .and("s.code in ['Foo', 'Bar']")
                 .asString();
@@ -70,7 +70,7 @@ class ClauseBuilderNewSyntaxTest {
     void whereDoubleAndTest() {
         String query =
             match()
-                .path(node("s"))
+                .matchPath(node("s"))
                 .where(select("s.name").eq(literal("Foo")))
                 .and(select("s.age").in(10, 20).and("s.code in ['Foo', 'Bar']"))
                 .or(select("s.address = 'Lisbon'").or(node("s").props("name", "'Foo'")))
@@ -85,11 +85,11 @@ class ClauseBuilderNewSyntaxTest {
     void testWhereWithXor() {
         String query =
             match()
-                .path(node("n:Person"))
-            .where(select("n.name").eq(literal("Peter")))
+                .matchPath(node("n:Person"))
+                .where(select("n.name").eq(literal("Peter")))
                 .xor(select("n.age").lt(30).and(select("n.name").eq("Timothy")))
                 .or(not(select("n.name").eq(literal("Timothy")).or("n.name = 'Peter'")))
-            .asString();
+                .asString();
         Assertions.assertEquals("MATCH (n:Person)" +
                 " WHERE (n.name = 'Peter' XOR (n.age < 30 AND n.name = 'Timothy')) OR NOT (n.name = 'Timothy' OR n.name = 'Peter')"
             , query);
@@ -99,7 +99,7 @@ class ClauseBuilderNewSyntaxTest {
     void testWhereWithXorString() {
         String query =
             match()
-                .path(node("n:Person"))
+                .matchPath(node("n:Person"))
                 .where("n.name = 'Peter'")
                 .xor("(n.age < 30 AND n.name = 'Timothy')")
                 .or(not("n.name = 'Timothy' OR n.name = 'Peter'"))
@@ -113,12 +113,12 @@ class ClauseBuilderNewSyntaxTest {
     void testWhereWithPathExpression() {
         String query =
             match()
-                .path(node("n:Person"))
-                .path("(s:Country)")
-            .where(node("n").right().node("s"))
+                .matchPath(node("n:Person"))
+                .matchPath("(s:Country)")
+                .where(node("n").right().node("s"))
                 .or("n.name = 'Timothy'")
                 .or(select("n.name").eq("Sandra").xor("n.age < 30"))
-            .asString();
+                .asString();
         Assertions.assertEquals(
             "MATCH (n:Person), (s:Country) WHERE ((n)-->(s) OR n.name = 'Timothy')" +
                 " OR (n.name = 'Sandra' XOR n.age < 30)", query);
@@ -128,7 +128,7 @@ class ClauseBuilderNewSyntaxTest {
     void returnsTest() {
         String query =
             match()
-                .path(node("s"))
+                .matchPath(node("s"))
                 .where(select("s.name").eq(literal("Foo")))
                 .and("s.code in ['Foo', 'Bar']")
                 .returns("s")
@@ -141,7 +141,7 @@ class ClauseBuilderNewSyntaxTest {
     void returnsNodeProperty() {
         String query =
             match()
-                .path(node("n").props("name", "'A'"))
+                .matchPath(node("n").props("name", "'A'"))
                 .returns("n.name")
                 .asString();
 
@@ -152,7 +152,7 @@ class ClauseBuilderNewSyntaxTest {
     void returnsWithAlias() {
         String query =
             match()
-                .path(node("n").props("name", "'A'"))
+                .matchPath(node("n").props("name", "'A'"))
                 .returns(select("n").prop("name").as("something"))
                 .asString();
 
@@ -163,7 +163,7 @@ class ClauseBuilderNewSyntaxTest {
     void returnsOtherExpressions() {
         String query =
             match()
-                .path(node("a").props("name", "'A'"))
+                .matchPath(node("a").props("name", "'A'"))
                 .returns(select("a").prop("age").bt(30), "\"I'm a literal\"", node("a").right().node())
                 .asString();
 
@@ -174,7 +174,7 @@ class ClauseBuilderNewSyntaxTest {
     @Test
     void orderByTest() {
         String s = match()
-            .path(node("n:Name").props("name", "'Fred'"))
+            .matchPath(node("n:Name").props("name", "'Fred'"))
             .with()
             .select("n")
             .orderBy("n.name")
@@ -185,7 +185,7 @@ class ClauseBuilderNewSyntaxTest {
     @Test
     void orderByWithSelectorTest() {
         String s = match()
-            .path(node("n:Name").props("name", "'Fred'"))
+            .matchPath(node("n:Name").props("name", "'Fred'"))
             .with()
             .select(select("n"))
             .orderBy(select("n").prop("name"))
@@ -197,7 +197,7 @@ class ClauseBuilderNewSyntaxTest {
     @Test
     void skipWithInt() {
         String s = match()
-            .path(node("n"))
+            .matchPath(node("n"))
             .returns(select("n").prop("name"))
             .skip(1)
             .limit(1)
@@ -209,8 +209,8 @@ class ClauseBuilderNewSyntaxTest {
     void skipWithLiteral() {
         String s =
             match()
-                .path(node("n"))
-            .returns(select("n").prop("name"))
+                .matchPath(node("n"))
+                .returns(select("n").prop("name"))
                 .skip(literal(1))
                 .limit(literal(1)).asString();
         Assertions.assertEquals("MATCH (n) RETURN n.name SKIP 1 LIMIT 1", s);
@@ -219,7 +219,7 @@ class ClauseBuilderNewSyntaxTest {
     @Test
     void skipWithVariable() {
         String s = match()
-            .path(node("s"))
+            .matchPath(node("s"))
             .with()
             .select(select("s"))
             .skip(var("skip")).limit(var("limit")).returns("s").asString();
@@ -230,7 +230,7 @@ class ClauseBuilderNewSyntaxTest {
     @Test
     void limitWithInt() {
         String s = match()
-            .path(node("n"))
+            .matchPath(node("n"))
             .returns(select("n").prop("name")).limit(1).asString();
         Assertions.assertEquals("MATCH (n) RETURN n.name LIMIT 1", s);
     }
@@ -238,14 +238,14 @@ class ClauseBuilderNewSyntaxTest {
     @Test
     void limitWithLiteral() {
         String s = match()
-            .path(node("n")).returns(select("n").prop("name")).limit(literal(1)).asString();
+            .matchPath(node("n")).returns(select("n").prop("name")).limit(literal(1)).asString();
         Assertions.assertEquals("MATCH (n) RETURN n.name LIMIT 1", s);
     }
 
     @Test
     void limitWithVariable() {
         String s = match()
-            .path(node("s")).with().select("s").limit(var("limit")).returns("s").asString();
+            .matchPath(node("s")).with().select("s").limit(var("limit")).returns("s").asString();
         Assertions.assertEquals("MATCH (s) WITH s LIMIT $limit RETURN s", s);
     }
 
@@ -282,8 +282,8 @@ class ClauseBuilderNewSyntaxTest {
     @Test
     void createMultiplePaths() {
         String s = create()
-            .exp(node("n:Name").props("name", "'Fred'"))
-            .exp("(s:Colour {colour: 'orange'})")
+            .createPath(node("n:Name").props("name", "'Fred'"))
+            .createPath("(s:Colour {colour: 'orange'})")
             .returns(select("n").prop("name")).limit(1).asString();
         Assertions.assertEquals("CREATE (n:Name {name: 'Fred'}), (s:Colour {colour: 'orange'}) RETURN n.name LIMIT 1", s);
     }
@@ -294,5 +294,18 @@ class ClauseBuilderNewSyntaxTest {
             .create(node("n:Name").props("name", "'Mark'"))
             .returns(select("n").prop("name")).limit(1).asString();
         Assertions.assertEquals("MATCH (n:Name {name: 'Fred'}), (s:Colour {colour: 'orange'}) CREATE (n:Name {name: 'Mark'}) RETURN n.name LIMIT 1", s);
+    }
+
+    @Test
+    void mergeTest() {
+        String s =
+            merge(node("n:Name").props("name", "'Fred'"))
+                .mergePath("(s:Person {name: 'Foo'})")
+                .mergePath(node("name:Name").props("name", "'Bar'"))
+            .merge(node("name1:Name").props("name", "'Carson'"))
+            .returns(select("n").prop("name")).asString();
+        Assertions.assertEquals("" +
+            "MERGE (n:Name {name: 'Fred'}), (s:Person {name: 'Foo'}), (name:Name {name: 'Bar'})"
+            + " MERGE (name1:Name {name: 'Carson'}) RETURN n.name", s);
     }
 }
