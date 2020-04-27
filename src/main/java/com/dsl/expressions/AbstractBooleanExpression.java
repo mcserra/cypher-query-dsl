@@ -98,8 +98,8 @@ public abstract class AbstractBooleanExpression extends ConditionalAbstractExpre
     }
 
     @Override
-    public LogicalExpression contains(Object o){
-        return new Contains(this, new Literal(o));
+    public LogicalExpression contains(String s){
+        return new Contains(this, new Literal(s));
     }
 
 }
