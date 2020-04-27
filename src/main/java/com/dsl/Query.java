@@ -2,11 +2,13 @@ package com.dsl;
 
 import com.dsl.clauses.CreateClause;
 import com.dsl.clauses.MatchClause;
+import com.dsl.clauses.MergeClause;
 import com.dsl.clauses.WithClause;
 import com.dsl.clauses.linking.AfterCreate;
 import com.dsl.clauses.linking.AfterMatch;
+import com.dsl.clauses.linking.AfterMerge;
 import com.dsl.clauses.linking.AfterWith;
-import com.dsl.clauses.linking.ClauseBuilderNewSyntax;
+import com.dsl.clauses.linking.ClauseBuilder;
 import com.dsl.expressions.aggregating.Average;
 import com.dsl.expressions.aggregating.Collect;
 import com.dsl.expressions.aggregating.Count;
@@ -39,19 +41,23 @@ public class Query {
     }
 
     public static AfterWith with(FinalExpression... finalExpression) {
-        return new ClauseBuilderNewSyntax(new WithClause(finalExpression));
+        return new ClauseBuilder(new WithClause(finalExpression));
     }
 
     public static AfterMatch match(PathExpression... pathExpression) {
-        return new ClauseBuilderNewSyntax(new MatchClause(pathExpression));
+        return new ClauseBuilder(new MatchClause(pathExpression));
     }
 
     public static AfterMatch optMatch(final PathExpression... pathExpression) {
-        return new ClauseBuilderNewSyntax(MatchClause.optMatch(pathExpression));
+        return new ClauseBuilder(MatchClause.optMatch(pathExpression));
     }
 
     public static AfterCreate create(PathExpression... pathExpression) {
-        return new ClauseBuilderNewSyntax(new CreateClause(pathExpression));
+        return new ClauseBuilder(new CreateClause(pathExpression));
+    }
+
+    public static AfterMerge merge(PathExpression... pathExpression) {
+        return new ClauseBuilder(new MergeClause(pathExpression));
     }
 
     public static Collect collect(SelectorExpression expression) {

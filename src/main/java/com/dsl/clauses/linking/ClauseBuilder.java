@@ -6,6 +6,7 @@ import com.dsl.clauses.Clause;
 import com.dsl.clauses.CreateClause;
 import com.dsl.clauses.LimitClause;
 import com.dsl.clauses.MatchClause;
+import com.dsl.clauses.MergeClause;
 import com.dsl.clauses.OrderByClause;
 import com.dsl.clauses.ReturnClause;
 import com.dsl.clauses.SkipClause;
@@ -23,31 +24,49 @@ import com.dsl.expressions.path.PathExpression;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClauseBuilderNewSyntax 
+public class ClauseBuilder
     implements AfterMatch, AsString, AfterWith, WithAlias,
     AfterWhere, AfterReturns, AfterLimit, AfterSkip, AfterOrderBy,
-    AfterCreate {
+    AfterCreate, AfterMerge {
 
     private final List<Clause> clauses = new ArrayList<>();
 
-    public ClauseBuilderNewSyntax(final Clause clause) {
+    public ClauseBuilder(final Clause clause) {
         this.clauses.add(clause);
     }
 
     @Override
-    public AfterMatch path(final PathExpression pathExpression) {
+    public AfterMatch matchPath(final PathExpression pathExpression) {
         getLast(MatchClause.class).addExpression(pathExpression);
         return this;
     }
 
     @Override
-    public AfterMatch path(final String pathExpression) {
+    public AfterMatch matchPath(final String pathExpression) {
         getLast(MatchClause.class).addExpression(pathExpression);
         return this;
     }
 
     @Override
-    public AfterCreate exp(PathExpression pathExpression) {
+    public AfterMerge mergePath(PathExpression pathExpression) {
+        getLast(MergeClause.class).addExpression(pathExpression);
+        return this;
+    }
+
+    @Override
+    public AfterMerge mergePath(String pathExpression) {
+        getLast(MergeClause.class).addExpression(pathExpression);
+        return this;
+    }
+
+    @Override
+    public AfterMerge merge(PathExpression... e) {
+        this.clauses.add(new MergeClause(e));
+        return this;
+    }
+
+    @Override
+    public AfterCreate createPath(PathExpression pathExpression) {
         getLast(CreateClause.class).addExpression(pathExpression);
         return this;
     }
@@ -59,7 +78,7 @@ public class ClauseBuilderNewSyntax
     }
 
     @Override
-    public AfterCreate exp(String pathExpression) {
+    public AfterCreate createPath(String pathExpression) {
         getLast(CreateClause.class).addExpression(pathExpression);
         return this;
     }
