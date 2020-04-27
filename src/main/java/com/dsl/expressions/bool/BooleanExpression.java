@@ -37,4 +37,7 @@ public interface BooleanExpression extends Expression {
 
     LogicalExpression in(Object... expressions);
     LogicalExpression in(Variable expressions);
+
+    LogicalExpression contains(String s);
+
 }
