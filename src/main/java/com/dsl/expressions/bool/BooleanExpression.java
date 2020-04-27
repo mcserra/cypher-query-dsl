@@ -40,6 +40,4 @@ public interface BooleanExpression extends Expression {
 
     LogicalExpression contains(Object o);
 
-    LogicalExpression contains(Expression expression);
-
 }
