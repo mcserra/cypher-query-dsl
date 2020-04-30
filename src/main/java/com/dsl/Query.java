@@ -45,19 +45,19 @@ public class Query {
     }
 
     public static AfterMatch match(PathExpression... pathExpression) {
-        return new ClauseBuilder(new MatchClause(pathExpression));
+        return new ClauseBuilder().match(new MatchClause(pathExpression));
     }
 
     public static AfterMatch optMatch(final PathExpression... pathExpression) {
-        return new ClauseBuilder(MatchClause.optMatch(pathExpression));
+        return new ClauseBuilder().match(MatchClause.optMatch(pathExpression));
     }
 
     public static AfterCreate create(PathExpression... pathExpression) {
-        return new ClauseBuilder(new CreateClause(pathExpression));
+        return new ClauseBuilder().create(new CreateClause(pathExpression));
     }
 
     public static AfterMerge merge(PathExpression... pathExpression) {
-        return new ClauseBuilder(new MergeClause(pathExpression));
+        return new ClauseBuilder().merge(new MergeClause(pathExpression));
     }
 
     public static Collect collect(SelectorExpression expression) {

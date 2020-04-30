@@ -25,62 +25,52 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ClauseBuilder
-    implements AfterMatch, AsString, AfterWith, WithAlias,
-    AfterWhere, AfterReturns, AfterLimit, AfterSkip, AfterOrderBy,
-    AfterCreate, AfterMerge {
+    implements AsString, AfterWith, WithAlias, AfterWhere, AfterReturns, AfterLimit, AfterSkip, AfterOrderBy, Where {
 
     private final List<Clause> clauses = new ArrayList<>();
+    private AfterCreateImpl afterCreateImpl;
+    private AfterMatchImpl afterMatchImpl;
+    private AfterMergeImpl afterMergeImpl;
 
     public ClauseBuilder(final Clause clause) {
-        this.clauses.add(clause);
+        init(clause);
     }
 
-    @Override
-    public AfterMatch matchPath(final PathExpression pathExpression) {
-        getLast(MatchClause.class).addExpression(pathExpression);
-        return this;
+    public ClauseBuilder() {
     }
 
-    @Override
-    public AfterMatch matchPath(final String pathExpression) {
-        getLast(MatchClause.class).addExpression(pathExpression);
-        return this;
+    public AfterMatchImpl match(final Clause clause) {
+        init(clause);
+        return afterMatchImpl;
     }
 
-    @Override
-    public AfterMerge mergePath(PathExpression pathExpression) {
-        getLast(MergeClause.class).addExpression(pathExpression);
-        return this;
+    public AfterMergeImpl merge(final Clause clause) {
+        init(clause);
+        return afterMergeImpl;
     }
 
-    @Override
-    public AfterMerge mergePath(String pathExpression) {
-        getLast(MergeClause.class).addExpression(pathExpression);
-        return this;
+    public AfterCreateImpl create(final Clause clause) {
+        init(clause);
+        return afterCreateImpl;
+    }
+
+    private void init(final Clause clause) {
+        afterCreateImpl = new AfterCreateImpl(this);
+        afterMatchImpl = new AfterMatchImpl(this);
+        afterMergeImpl = new AfterMergeImpl(this);
+        clauses.add(clause);
     }
 
     @Override
     public AfterMerge merge(PathExpression... e) {
         this.clauses.add(new MergeClause(e));
-        return this;
-    }
-
-    @Override
-    public AfterCreate createPath(PathExpression pathExpression) {
-        getLast(CreateClause.class).addExpression(pathExpression);
-        return this;
+        return afterMergeImpl;
     }
 
     @Override
     public AfterCreate create(PathExpression... pathExpressions) {
         clauses.add(new CreateClause(pathExpressions));
-        return this;
-    }
-
-    @Override
-    public AfterCreate createPath(String pathExpression) {
-        getLast(CreateClause.class).addExpression(pathExpression);
-        return this;
+        return afterCreateImpl;
     }
 
     @Override
@@ -104,13 +94,13 @@ public class ClauseBuilder
     @Override
     public AfterMatch match(PathExpression... pathExpressions) {
         clauses.add(new MatchClause(pathExpressions));
-        return this;
+        return afterMatchImpl;
     }
 
     @Override
     public AfterMatch optMatch(PathExpression... pathExpressions) {
         clauses.add(MatchClause.optMatch(pathExpressions));
-        return this;
+        return afterMatchImpl;
     }
 
     @Override
@@ -119,23 +109,23 @@ public class ClauseBuilder
         return this;
     }
 
-    @Override
-    public AfterWhere where(final LogicalExpression logicalExpression) {
-        clauses.add(new WhereClause(logicalExpression));
-        return this;
-    }
+     @Override
+     public AfterWhere where(final LogicalExpression logicalExpression) {
+         clauses.add(new WhereClause(logicalExpression));
+         return this;
+     }
 
-    @Override
-    public AfterWhere where(final String expression) {
-        clauses.add(new WhereClause(expression));
-        return this;
-    }
+     @Override
+     public AfterWhere where(final String expression) {
+         clauses.add(new WhereClause(expression));
+         return this;
+     }
 
-    @Override
-    public AfterWhere where(final PathExpression pathExpression) {
-        clauses.add(new WhereClause(pathExpression));
-        return this;
-    }
+     @Override
+     public AfterWhere where(final PathExpression pathExpression) {
+         clauses.add(new WhereClause(pathExpression));
+         return this;
+     }
 
     @Override
     public AfterWhere and(String expression) {
@@ -261,5 +251,77 @@ public class ClauseBuilder
     @Override
     public String asString() {
         return String.join(" ", StringUtils.asString(clauses));
+    }
+
+    private static class AfterCreateImpl extends ClauseImpl implements AfterCreate, AsString {
+
+        public AfterCreateImpl(ClauseBuilder clauseBuilder) {
+            super(clauseBuilder);
+        }
+
+        @Override
+        public AfterCreate path(PathExpression pathExpression) {
+            clauseBuilder.getLast(CreateClause.class).addExpression(pathExpression);
+            return this;
+        }
+
+        @Override
+        public AfterCreate path(String pathExpression) {
+            clauseBuilder.getLast(CreateClause.class).addExpression(pathExpression);
+            return this;
+        }
+
+        @Override
+        public String asString() {
+            return clauseBuilder.asString();
+        }
+    }
+
+    private static class AfterMatchImpl extends ClauseImpl implements AfterMatch {
+
+        public AfterMatchImpl(ClauseBuilder clauseBuilder) {
+            super(clauseBuilder);
+        }
+
+        @Override
+        public AfterMatch path(PathExpression pathExpression) {
+            clauseBuilder.getLast(MatchClause.class).addExpression(pathExpression);
+            return this;
+        }
+
+        @Override
+        public AfterMatch path(String pathExpression) {
+            clauseBuilder.getLast(MatchClause.class).addExpression(pathExpression);
+            return this;
+        }
+
+        @Override
+        public String asString() {
+            return clauseBuilder.asString();
+        }
+    }
+
+    private static class AfterMergeImpl extends ClauseImpl implements AfterMerge {
+
+        public AfterMergeImpl(ClauseBuilder clauseBuilder) {
+            super(clauseBuilder);
+        }
+
+        @Override
+        public AfterMerge path(PathExpression pathExpression) {
+            clauseBuilder.getLast(MergeClause.class).addExpression(pathExpression);
+            return this;
+        }
+
+        @Override
+        public AfterMerge path(String pathExpression) {
+            clauseBuilder.getLast(MergeClause.class).addExpression(pathExpression);
+            return this;
+        }
+
+        @Override
+        public String asString() {
+            return clauseBuilder.asString();
+        }
     }
 }

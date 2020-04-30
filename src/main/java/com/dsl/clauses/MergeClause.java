@@ -11,23 +11,23 @@ import java.util.Collections;
 import java.util.List;
 
 public class MergeClause implements AsString, Clause {
-    private final List<Expression> pathExpressions = new ArrayList<>();
+    private final List<Expression> expressions = new ArrayList<>();
 
     //Remove after new syntax
-    public MergeClause(PathExpression... pathExpressions) {
-        Collections.addAll(this.pathExpressions, pathExpressions);
+    public MergeClause(PathExpression... expressions) {
+        Collections.addAll(this.expressions, expressions);
     }
 
     public void addExpression(final PathExpression e) {
-        this.pathExpressions.add(e);
+        this.expressions.add(e);
     }
 
     public void addExpression(final String e) {
-        this.pathExpressions.add(new Selector(e));
+        this.expressions.add(new Selector(e));
     }
 
     @Override
     public String asString() {
-        return String.format("MERGE %s", String.join(", ", StringUtils.asString(pathExpressions)));
+        return String.format("MERGE %s", String.join(", ", StringUtils.asString(expressions)));
     }
 }
