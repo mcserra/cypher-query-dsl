@@ -4,6 +4,6 @@ import com.dsl.AsString;
 import com.dsl.expressions.path.PathExpression;
 
 public interface AfterMerge extends AsString, With, Match, Returns, Create, Merge {
-    AfterMerge mergePath(PathExpression pathExpression);
-    AfterMerge mergePath(String pathExpression);
+    AfterMerge path(PathExpression pathExpression);
+    AfterMerge path(String pathExpression);
 }
