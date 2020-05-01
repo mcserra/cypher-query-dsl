@@ -1,5 +1,7 @@
 package com.dsl.expressions;
 
+import com.dsl.expressions.bool.AbstractBooleanExpression;
+
 /**
  * Represents an expression, with the right and left side expression and the operator.
  * If no operator or no right expression exists, than this represents an ExpressionParameter.
@@ -11,8 +13,6 @@ public class AbstractExpression extends AbstractBooleanExpression {
 
     public AbstractExpression(Expression value) {
         this.left = value;
-        this.operator = null;
-        this.right = null;
     }
 
     public AbstractExpression(Expression left, String operator, Expression right) {

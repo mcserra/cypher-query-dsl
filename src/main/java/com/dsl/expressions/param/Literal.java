@@ -1,7 +1,7 @@
 package com.dsl.expressions.param;
 
 import com.dsl.AsString;
-import com.dsl.expressions.AbstractBooleanExpression;
+import com.dsl.expressions.bool.AbstractBooleanExpression;
 
 /**
  * Represents a literal.

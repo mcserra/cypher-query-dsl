@@ -9,6 +9,7 @@ import com.dsl.expressions.param.Variable;
  * An expression that returns true or false
  */
 public interface BooleanExpression extends Expression {
+
     LogicalExpression eq(Object o);
 
     LogicalExpression eq(Expression expression);

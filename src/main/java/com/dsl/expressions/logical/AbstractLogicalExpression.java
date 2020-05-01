@@ -1,7 +1,7 @@
 package com.dsl.expressions.logical;
 
 import com.dsl.AsString;
-import com.dsl.expressions.AbstractBooleanExpression;
+import com.dsl.expressions.bool.AbstractBooleanExpression;
 import com.dsl.expressions.AbstractExpression;
 import com.dsl.expressions.Expression;
 
@@ -15,9 +15,9 @@ public abstract class AbstractLogicalExpression extends AbstractExpression {
     }
 
     public static class LogicalExpression extends AbstractBooleanExpression implements AsString {
-        private Expression left;
-        private LogicalOperator operator;
-        private Expression right;
+        private final Expression left;
+        private final LogicalOperator operator;
+        private final Expression right;
 
         public LogicalExpression(Expression left, LogicalOperator operator, Expression right) {
             this.left = left;
