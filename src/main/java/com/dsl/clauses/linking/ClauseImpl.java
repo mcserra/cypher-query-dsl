@@ -4,67 +4,62 @@ import com.dsl.expressions.Expression;
 import com.dsl.expressions.logical.LogicalExpression;
 import com.dsl.expressions.path.PathExpression;
 
-public abstract class ClauseImpl implements
-    Create, Merge, Match, Returns, Where, With {
+public interface ClauseImpl extends Create, Merge, Match, Returns, Where, With {
 
-    protected final ClauseBuilder clauseBuilder;
+     ClauseBuilder clauseBuilder();
 
-    public ClauseImpl(final ClauseBuilder clauseBuilder) {
-        this.clauseBuilder = clauseBuilder;
+    @Override
+    default AfterCreate create(PathExpression... pathExpressions) {
+        return clauseBuilder().create(pathExpressions);
     }
 
     @Override
-    public AfterCreate create(PathExpression... pathExpressions) {
-        return this.clauseBuilder.create(pathExpressions);
+    default AfterMatch match(PathExpression... pathExpressions) {
+        return clauseBuilder().match(pathExpressions);
     }
 
     @Override
-    public AfterMatch match(PathExpression... pathExpressions) {
-        return this.clauseBuilder.match(pathExpressions);
+    default AfterMatch optMatch(PathExpression... pathExpressions) {
+        return clauseBuilder().optMatch(pathExpressions);
     }
 
     @Override
-    public AfterMatch optMatch(PathExpression... pathExpressions) {
-        return this.clauseBuilder.optMatch(pathExpressions);
+    default AfterWith with() {
+        return clauseBuilder().with();
     }
 
     @Override
-    public AfterWith with() {
-        return this.clauseBuilder.with();
+    default AfterWhere where(final LogicalExpression logicalExpression) {
+        return clauseBuilder().where(logicalExpression);
     }
 
     @Override
-    public AfterWhere where(final LogicalExpression logicalExpression) {
-        return this.clauseBuilder.where(logicalExpression);
+    default AfterWhere where(final String expression) {
+        return clauseBuilder().where(expression);
     }
 
     @Override
-    public AfterWhere where(final String expression) {
-        return this.clauseBuilder.where(expression);
+    default AfterWhere where(final PathExpression pathExpression) {
+        return clauseBuilder().where(pathExpression);
     }
 
     @Override
-    public AfterWhere where(final PathExpression pathExpression) {
-        return this.clauseBuilder.where(pathExpression);
+    default AfterReturns returns(Expression... e) {
+        return clauseBuilder().returns(e);
     }
 
     @Override
-    public AfterReturns returns(Expression... e) {
-        return this.clauseBuilder.returns(e);
+    default AfterMerge merge(PathExpression... e) {
+        return clauseBuilder().merge(e);
     }
 
     @Override
-    public AfterMerge merge(PathExpression... e) {
-        return this.clauseBuilder.merge(e);
+    default AfterReturns returns(String... e) {
+        return clauseBuilder().returns(e);
     }
 
     @Override
-    public AfterReturns returns(String... e) {
-        return this.clauseBuilder.returns(e);
-    }
-
-    @Override
-    public AfterReturns returns(Object... e) {
-        return this.clauseBuilder.returns(e);
+    default AfterReturns returns(Object... e) {
+        return clauseBuilder().returns(e);
     }
 }

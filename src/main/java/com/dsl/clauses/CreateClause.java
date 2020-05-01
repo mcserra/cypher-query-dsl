@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class CreateClause implements Clause {
+public class CreateClause implements Clause, PathExpressionClause {
     private final List<Expression> expressions = new ArrayList<>();
 
     public CreateClause(PathExpression... expressions) {

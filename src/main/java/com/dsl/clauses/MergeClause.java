@@ -1,6 +1,5 @@
 package com.dsl.clauses;
 
-import com.dsl.AsString;
 import com.dsl.StringUtils;
 import com.dsl.expressions.Expression;
 import com.dsl.expressions.param.Selector;
@@ -10,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class MergeClause implements AsString, Clause {
+public class MergeClause implements Clause, PathExpressionClause {
     private final List<Expression> expressions = new ArrayList<>();
 
     //Remove after new syntax

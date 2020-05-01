@@ -8,6 +8,7 @@ import com.dsl.clauses.LimitClause;
 import com.dsl.clauses.MatchClause;
 import com.dsl.clauses.MergeClause;
 import com.dsl.clauses.OrderByClause;
+import com.dsl.clauses.PathExpressionClause;
 import com.dsl.clauses.ReturnClause;
 import com.dsl.clauses.SkipClause;
 import com.dsl.clauses.WhereClause;
@@ -55,9 +56,9 @@ public class ClauseBuilder
     }
 
     private void init(final Clause clause) {
-        afterCreateImpl = new AfterCreateImpl(this);
-        afterMatchImpl = new AfterMatchImpl(this);
-        afterMergeImpl = new AfterMergeImpl(this);
+        afterCreateImpl = new AfterCreateImpl(this).init();
+        afterMatchImpl = new AfterMatchImpl(this).init();
+        afterMergeImpl = new AfterMergeImpl(this).init();
         clauses.add(clause);
     }
 
@@ -253,73 +254,71 @@ public class ClauseBuilder
         return String.join(" ", StringUtils.asString(clauses));
     }
 
-    private static class AfterCreateImpl extends ClauseImpl implements AfterCreate, AsString {
-
-        public AfterCreateImpl(ClauseBuilder clauseBuilder) {
+    private static class AfterCreateImpl
+        extends PathExpressionAppender<AfterCreate, CreateClause> implements ClauseImpl, AfterCreate {
+        private AfterCreateImpl(ClauseBuilder clauseBuilder) {
             super(clauseBuilder);
         }
 
-        @Override
-        public AfterCreate path(PathExpression pathExpression) {
-            clauseBuilder.getLast(CreateClause.class).addExpression(pathExpression);
+        private AfterCreateImpl init() {
+            setT(this, CreateClause.class);
             return this;
-        }
-
-        @Override
-        public AfterCreate path(String pathExpression) {
-            clauseBuilder.getLast(CreateClause.class).addExpression(pathExpression);
-            return this;
-        }
-
-        @Override
-        public String asString() {
-            return clauseBuilder.asString();
         }
     }
 
-    private static class AfterMatchImpl extends ClauseImpl implements AfterMatch {
-
-        public AfterMatchImpl(ClauseBuilder clauseBuilder) {
+    private static class AfterMatchImpl
+        extends PathExpressionAppender<AfterMatch, MatchClause> implements AfterMatch, ClauseImpl {
+        private AfterMatchImpl(ClauseBuilder clauseBuilder) {
             super(clauseBuilder);
         }
 
-        @Override
-        public AfterMatch path(PathExpression pathExpression) {
-            clauseBuilder.getLast(MatchClause.class).addExpression(pathExpression);
+        private AfterMatchImpl init() {
+            setT(this, MatchClause.class);
             return this;
-        }
-
-        @Override
-        public AfterMatch path(String pathExpression) {
-            clauseBuilder.getLast(MatchClause.class).addExpression(pathExpression);
-            return this;
-        }
-
-        @Override
-        public String asString() {
-            return clauseBuilder.asString();
         }
     }
 
-    private static class AfterMergeImpl extends ClauseImpl implements AfterMerge {
-
-        public AfterMergeImpl(ClauseBuilder clauseBuilder) {
+    private static class AfterMergeImpl
+        extends PathExpressionAppender<AfterMerge, MergeClause> implements AfterMerge, ClauseImpl {
+        private AfterMergeImpl(ClauseBuilder clauseBuilder) {
             super(clauseBuilder);
         }
 
-        @Override
-        public AfterMerge path(PathExpression pathExpression) {
-            clauseBuilder.getLast(MergeClause.class).addExpression(pathExpression);
+        private AfterMergeImpl init() {
+            setT(this, MergeClause.class);
             return this;
         }
+    }
 
-        @Override
-        public AfterMerge path(String pathExpression) {
-            clauseBuilder.getLast(MergeClause.class).addExpression(pathExpression);
-            return this;
+    private abstract static class PathExpressionAppender<T, U extends PathExpressionClause> {
+
+        private final ClauseBuilder clauseBuilder;
+        private Class<U> uClass;
+        private T t;
+
+        public PathExpressionAppender(ClauseBuilder clauseBuilder) {
+            this.clauseBuilder = clauseBuilder;
         }
 
-        @Override
+        public void setT(T t, Class<U> uClass) {
+            this.t = t;
+            this.uClass = uClass;
+        }
+
+        public ClauseBuilder clauseBuilder() {
+            return clauseBuilder;
+        }
+
+        public T path(PathExpression pathExpression) {
+            clauseBuilder.getLast(uClass).addExpression(pathExpression);
+            return t;
+        }
+
+        public T path(String pathExpression) {
+            clauseBuilder.getLast(uClass).addExpression(pathExpression);
+            return t;
+        }
+
         public String asString() {
             return clauseBuilder.asString();
         }
