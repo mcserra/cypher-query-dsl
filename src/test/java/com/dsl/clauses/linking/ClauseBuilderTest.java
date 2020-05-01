@@ -1,5 +1,7 @@
 package com.dsl.clauses.linking;
 
+import java.time.LocalDate;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -302,9 +304,27 @@ class ClauseBuilderTest {
             merge(node("n:Name").props("name", "'Fred'"))
                 .path("(s:Person {name: 'Foo'})")
                 .path(node("name:Name").props("name", "'Bar'"))
-            .merge(node("name1:Name").props("name", "'Carson'")).asString();
+                .merge(node("name1:Name").props("name", "'Carson'")).asString();
         Assertions.assertEquals("" +
             "MERGE (n:Name {name: 'Fred'}), (s:Person {name: 'Foo'}), (name:Name {name: 'Bar'})"
             + " MERGE (name1:Name {name: 'Carson'})", s);
+    }
+
+    @Test
+    void onCreateWithExpression() {
+        String s = merge(node("n:Name").props("name", "'Fred'"))
+            .onCreate(select("n.updateDate").set(var("date")))
+            .onMatch(select("n.createDate").set(var("date"))).asString();
+        Assertions.assertEquals(
+            "MERGE (n:Name {name: 'Fred'}) ON MATCH SET n.createDate = $date ON CREATE SET n.updateDate = $date", s);
+    }
+
+    @Test
+    void onCreateWithString() {
+        String s = merge(node("n:Name").props("name", "'Fred'"))
+            .onCreate("n.updateDate = $date")
+            .onMatch("n.createDate = $date").asString();
+        Assertions.assertEquals(
+            "MERGE (n:Name {name: 'Fred'}) ON MATCH SET n.createDate = $date ON CREATE SET n.updateDate = $date", s);
     }
 }
