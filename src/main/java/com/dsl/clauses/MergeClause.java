@@ -9,10 +9,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class CreateClause implements Clause, PathExpressionClause {
+public class MergeClause implements Clause, PathExpressionClause {
     private final List<Expression> expressions = new ArrayList<>();
 
-    public CreateClause(PathExpression... expressions) {
+    //Remove after new syntax
+    public MergeClause(PathExpression... expressions) {
         Collections.addAll(this.expressions, expressions);
     }
 
@@ -26,6 +27,6 @@ public class CreateClause implements Clause, PathExpressionClause {
 
     @Override
     public String asString() {
-        return String.format("CREATE %s", String.join(", ", StringUtils.asString(expressions)));
+        return String.format("MERGE %s", String.join(", ", StringUtils.asString(expressions)));
     }
 }

@@ -1,12 +1,14 @@
 package com.dsl;
 
-import com.dsl.clauses.ClauseBuilder;
 import com.dsl.clauses.CreateClause;
 import com.dsl.clauses.MatchClause;
+import com.dsl.clauses.MergeClause;
 import com.dsl.clauses.WithClause;
-import com.dsl.clauses.linking.ClauseBuilderNewSyntax;
-import com.dsl.clauses.links.AfterMatch;
-import com.dsl.clauses.links.AfterWith;
+import com.dsl.clauses.linking.AfterCreate;
+import com.dsl.clauses.linking.AfterMatch;
+import com.dsl.clauses.linking.AfterMerge;
+import com.dsl.clauses.linking.AfterWith;
+import com.dsl.clauses.linking.ClauseBuilder;
 import com.dsl.expressions.aggregating.Average;
 import com.dsl.expressions.aggregating.Collect;
 import com.dsl.expressions.aggregating.Count;
@@ -38,32 +40,24 @@ public class Query {
     private Query() {
     }
 
-    public static AfterMatch create(PathExpression... expressions) {
-        return new ClauseBuilder(new CreateClause(expressions));
+    public static AfterWith with(FinalExpression... finalExpression) {
+        return new ClauseBuilder(new WithClause(finalExpression));
     }
 
-    public static AfterMatch match(PathExpression... expressions) {
-        return new ClauseBuilder(new MatchClause(expressions));
+    public static AfterMatch match(PathExpression... pathExpression) {
+        return new ClauseBuilder().match(new MatchClause(pathExpression));
     }
 
-    public static com.dsl.clauses.linking.AfterWith with() {
-        return new ClauseBuilderNewSyntax(new WithClause());
+    public static AfterMatch optMatch(final PathExpression... pathExpression) {
+        return new ClauseBuilder().match(MatchClause.optMatch(pathExpression));
     }
 
-    public static com.dsl.clauses.linking.AfterMatch match() {
-        return new ClauseBuilderNewSyntax(new MatchClause());
+    public static AfterCreate create(PathExpression... pathExpression) {
+        return new ClauseBuilder().create(new CreateClause(pathExpression));
     }
 
-    public static com.dsl.clauses.linking.AfterMatch optMatch() {
-        return new ClauseBuilderNewSyntax(MatchClause.optMatch());
-    }
-
-    public static AfterMatch optMatch(PathExpression... expressions) {
-        return new ClauseBuilder(new MatchClause(true, expressions));
-    }
-
-    public static AfterWith with(FinalExpression... expressions) {
-        return new ClauseBuilder(new WithClause(expressions));
+    public static AfterMerge merge(PathExpression... pathExpression) {
+        return new ClauseBuilder().merge(new MergeClause(pathExpression));
     }
 
     public static Collect collect(SelectorExpression expression) {

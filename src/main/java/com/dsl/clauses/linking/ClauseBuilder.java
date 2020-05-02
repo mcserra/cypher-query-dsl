@@ -3,9 +3,12 @@ package com.dsl.clauses.linking;
 import com.dsl.AsString;
 import com.dsl.StringUtils;
 import com.dsl.clauses.Clause;
+import com.dsl.clauses.CreateClause;
 import com.dsl.clauses.LimitClause;
 import com.dsl.clauses.MatchClause;
+import com.dsl.clauses.MergeClause;
 import com.dsl.clauses.OrderByClause;
+import com.dsl.clauses.PathExpressionClause;
 import com.dsl.clauses.ReturnClause;
 import com.dsl.clauses.SkipClause;
 import com.dsl.clauses.WhereClause;
@@ -22,25 +25,53 @@ import com.dsl.expressions.path.PathExpression;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClauseBuilderNewSyntax 
-    implements AfterMatch, AsString, AfterWith, WithAlias, AfterWhere, AfterReturns, AfterLimit, AfterSkip, AfterOrderBy {
+public class ClauseBuilder
+    implements AsString, AfterWith, WithAlias, AfterWhere, AfterReturns, AfterLimit, AfterSkip, AfterOrderBy, Where {
 
     private final List<Clause> clauses = new ArrayList<>();
+    private AfterCreateImpl afterCreateImpl;
+    private AfterMatchImpl afterMatchImpl;
+    private AfterMergeImpl afterMergeImpl;
 
-    public ClauseBuilderNewSyntax(final Clause clause) {
-        this.clauses.add(clause);
+    public ClauseBuilder(final Clause clause) {
+        init(clause);
+    }
+
+    public ClauseBuilder() {
+    }
+
+    public AfterMatchImpl match(final Clause clause) {
+        init(clause);
+        return afterMatchImpl;
+    }
+
+    public AfterMergeImpl merge(final Clause clause) {
+        init(clause);
+        return afterMergeImpl;
+    }
+
+    public AfterCreateImpl create(final Clause clause) {
+        init(clause);
+        return afterCreateImpl;
+    }
+
+    private void init(final Clause clause) {
+        afterCreateImpl = new AfterCreateImpl(this).init();
+        afterMatchImpl = new AfterMatchImpl(this).init();
+        afterMergeImpl = new AfterMergeImpl(this).init();
+        clauses.add(clause);
     }
 
     @Override
-    public AfterMatch path(final PathExpression pathExpression) {
-        getLast(MatchClause.class).addExpression(pathExpression);
-        return this;
+    public AfterMerge merge(PathExpression... e) {
+        this.clauses.add(new MergeClause(e));
+        return afterMergeImpl;
     }
 
     @Override
-    public AfterMatch path(final String expression) {
-        getLast(MatchClause.class).addExpression(expression);
-        return this;
+    public AfterCreate create(PathExpression... pathExpressions) {
+        clauses.add(new CreateClause(pathExpressions));
+        return afterCreateImpl;
     }
 
     @Override
@@ -62,15 +93,15 @@ public class ClauseBuilderNewSyntax
     }
 
     @Override
-    public AfterMatch match() {
-        clauses.add(new MatchClause());
-        return this;
+    public AfterMatch match(PathExpression... pathExpressions) {
+        clauses.add(new MatchClause(pathExpressions));
+        return afterMatchImpl;
     }
 
     @Override
-    public AfterMatch optMatch() {
-        clauses.add(MatchClause.optMatch());
-        return this;
+    public AfterMatch optMatch(PathExpression... pathExpressions) {
+        clauses.add(MatchClause.optMatch(pathExpressions));
+        return afterMatchImpl;
     }
 
     @Override
@@ -79,23 +110,23 @@ public class ClauseBuilderNewSyntax
         return this;
     }
 
-    @Override
-    public AfterWhere where(final LogicalExpression logicalExpression) {
-        clauses.add(new WhereClause(logicalExpression));
-        return this;
-    }
+     @Override
+     public AfterWhere where(final LogicalExpression logicalExpression) {
+         clauses.add(new WhereClause(logicalExpression));
+         return this;
+     }
 
-    @Override
-    public AfterWhere where(final String expression) {
-        clauses.add(new WhereClause(expression));
-        return this;
-    }
+     @Override
+     public AfterWhere where(final String expression) {
+         clauses.add(new WhereClause(expression));
+         return this;
+     }
 
-    @Override
-    public AfterWhere where(final PathExpression pathExpression) {
-        clauses.add(new WhereClause(pathExpression));
-        return this;
-    }
+     @Override
+     public AfterWhere where(final PathExpression pathExpression) {
+         clauses.add(new WhereClause(pathExpression));
+         return this;
+     }
 
     @Override
     public AfterWhere and(String expression) {
@@ -221,5 +252,75 @@ public class ClauseBuilderNewSyntax
     @Override
     public String asString() {
         return String.join(" ", StringUtils.asString(clauses));
+    }
+
+    private static class AfterCreateImpl
+        extends PathExpressionAppender<AfterCreate, CreateClause> implements ClauseImpl, AfterCreate {
+        private AfterCreateImpl(ClauseBuilder clauseBuilder) {
+            super(clauseBuilder);
+        }
+
+        private AfterCreateImpl init() {
+            setT(this, CreateClause.class);
+            return this;
+        }
+    }
+
+    private static class AfterMatchImpl
+        extends PathExpressionAppender<AfterMatch, MatchClause> implements AfterMatch, ClauseImpl {
+        private AfterMatchImpl(ClauseBuilder clauseBuilder) {
+            super(clauseBuilder);
+        }
+
+        private AfterMatchImpl init() {
+            setT(this, MatchClause.class);
+            return this;
+        }
+    }
+
+    private static class AfterMergeImpl
+        extends PathExpressionAppender<AfterMerge, MergeClause> implements AfterMerge, ClauseImpl {
+        private AfterMergeImpl(ClauseBuilder clauseBuilder) {
+            super(clauseBuilder);
+        }
+
+        private AfterMergeImpl init() {
+            setT(this, MergeClause.class);
+            return this;
+        }
+    }
+
+    private abstract static class PathExpressionAppender<T, U extends PathExpressionClause> {
+
+        private final ClauseBuilder clauseBuilder;
+        private Class<U> uClass;
+        private T t;
+
+        public PathExpressionAppender(ClauseBuilder clauseBuilder) {
+            this.clauseBuilder = clauseBuilder;
+        }
+
+        public void setT(T t, Class<U> uClass) {
+            this.t = t;
+            this.uClass = uClass;
+        }
+
+        public ClauseBuilder clauseBuilder() {
+            return clauseBuilder;
+        }
+
+        public T path(PathExpression pathExpression) {
+            clauseBuilder.getLast(uClass).addExpression(pathExpression);
+            return t;
+        }
+
+        public T path(String pathExpression) {
+            clauseBuilder.getLast(uClass).addExpression(pathExpression);
+            return t;
+        }
+
+        public String asString() {
+            return clauseBuilder.asString();
+        }
     }
 }

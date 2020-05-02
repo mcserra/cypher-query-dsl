@@ -102,4 +102,8 @@ public abstract class AbstractBooleanExpression extends ConditionalAbstractExpre
         return new Contains(this, new Literal(s));
     }
 
+    @Override
+    public LogicalExpression matchRegex(String s){
+        return new AbstractExpression(this, "=~", new Literal(s));
+    }
 }

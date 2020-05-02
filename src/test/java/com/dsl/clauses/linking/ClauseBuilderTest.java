@@ -3,16 +3,9 @@ package com.dsl.clauses.linking;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static com.dsl.Query.literal;
-import static com.dsl.Query.match;
-import static com.dsl.Query.node;
-import static com.dsl.Query.not;
-import static com.dsl.Query.optMatch;
-import static com.dsl.Query.select;
-import static com.dsl.Query.var;
-import static com.dsl.Query.with;
+import static com.dsl.Query.*;
 
-class ClauseBuilderNewSyntaxTest {
+class ClauseBuilderTest {
 
     //Match
     @Test
@@ -93,10 +86,10 @@ class ClauseBuilderNewSyntaxTest {
         String query =
             match()
                 .path(node("n:Person"))
-            .where(select("n.name").eq(literal("Peter")))
+                .where(select("n.name").eq(literal("Peter")))
                 .xor(select("n.age").lt(30).and(select("n.name").eq("Timothy")))
                 .or(not(select("n.name").eq(literal("Timothy")).or("n.name = 'Peter'")))
-            .asString();
+                .asString();
         Assertions.assertEquals("MATCH (n:Person)" +
                 " WHERE (n.name = 'Peter' XOR (n.age < 30 AND n.name = 'Timothy')) OR NOT (n.name = 'Timothy' OR n.name = 'Peter')"
             , query);
@@ -122,10 +115,10 @@ class ClauseBuilderNewSyntaxTest {
             match()
                 .path(node("n:Person"))
                 .path("(s:Country)")
-            .where(node("n").right().node("s"))
+                .where(node("n").right().node("s"))
                 .or("n.name = 'Timothy'")
                 .or(select("n.name").eq("Sandra").xor("n.age < 30"))
-            .asString();
+                .asString();
         Assertions.assertEquals(
             "MATCH (n:Person), (s:Country) WHERE ((n)-->(s) OR n.name = 'Timothy')" +
                 " OR (n.name = 'Sandra' XOR n.age < 30)", query);
@@ -217,7 +210,7 @@ class ClauseBuilderNewSyntaxTest {
         String s =
             match()
                 .path(node("n"))
-            .returns(select("n").prop("name"))
+                .returns(select("n").prop("name"))
                 .skip(literal(1))
                 .limit(literal(1)).asString();
         Assertions.assertEquals("MATCH (n) RETURN n.name SKIP 1 LIMIT 1", s);
@@ -254,5 +247,64 @@ class ClauseBuilderNewSyntaxTest {
         String s = match()
             .path(node("s")).with().select("s").limit(var("limit")).returns("s").asString();
         Assertions.assertEquals("MATCH (s) WITH s LIMIT $limit RETURN s", s);
+    }
+
+    //returns
+    @Test
+    void returnString() {
+        String s = with().select(literal(1).as("x")).returns("x").asString();
+        Assertions.assertEquals("WITH 1 AS x RETURN x", s);
+    }
+
+    @Test
+    void returnStringAndExpression() {
+        String s = with().select(literal(1).as("x")).returns("x", select("x.name").as("a")).asString();
+        Assertions.assertEquals("WITH 1 AS x RETURN x, x.name AS a", s);
+    }
+
+    @Test
+    void returnExpressionAliased() {
+        String s = with().select(literal(1).as("x")).returns(select("x").as("a")).asString();
+        Assertions.assertEquals("WITH 1 AS x RETURN x AS a", s);
+    }
+
+    @Test
+    void returnExpressionProps() {
+        String s = with().select(literal(1).as("x")).returns(select("x").prop("name")).asString();
+        Assertions.assertEquals("WITH 1 AS x RETURN x.name", s);
+    }
+
+    @Test
+    void returnsWithWrongType() {
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> with().select(literal(1).as("x")).returns(1).asString());
+    }
+
+    @Test
+    void createMultiplePaths() {
+        String s = create()
+            .path(node("n:Name").props("name", "'Fred'"))
+            .path("(s:Colour {colour: 'orange'})")
+            .returns(select("n").prop("name")).limit(1).asString();
+        Assertions.assertEquals("CREATE (n:Name {name: 'Fred'}), (s:Colour {colour: 'orange'}) RETURN n.name LIMIT 1", s);
+    }
+
+    @Test
+    void createAfterClause() {
+        String s = match(node("n:Name").props("name", "'Fred'"), node("s:Colour").props("colour", "'orange'"))
+            .optMatch(node("c:Country"))
+            .create(node("n:Name").props("name", "'Mark'")).asString();
+        Assertions.assertEquals("MATCH (n:Name {name: 'Fred'}), (s:Colour {colour: 'orange'}) OPTIONAL MATCH (c:Country) CREATE (n:Name {name: 'Mark'})", s);
+    }
+
+    @Test
+    void mergeTest() {
+        String s =
+            merge(node("n:Name").props("name", "'Fred'"))
+                .path("(s:Person {name: 'Foo'})")
+                .path(node("name:Name").props("name", "'Bar'"))
+            .merge(node("name1:Name").props("name", "'Carson'")).asString();
+        Assertions.assertEquals("" +
+            "MERGE (n:Name {name: 'Fred'}), (s:Person {name: 'Foo'}), (name:Name {name: 'Bar'})"
+            + " MERGE (name1:Name {name: 'Carson'})", s);
     }
 }
