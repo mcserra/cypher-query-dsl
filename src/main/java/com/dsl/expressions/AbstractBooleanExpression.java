@@ -1,8 +1,6 @@
 package com.dsl.expressions;
 
-import com.dsl.expressions.bool.BooleanExpression;
-import com.dsl.expressions.bool.Contains;
-import com.dsl.expressions.bool.In;
+import com.dsl.expressions.bool.*;
 import com.dsl.expressions.logical.ConditionalAbstractExpression;
 import com.dsl.expressions.logical.LogicalExpression;
 import com.dsl.expressions.param.As;
@@ -106,4 +104,12 @@ public abstract class AbstractBooleanExpression extends ConditionalAbstractExpre
     public LogicalExpression matchRegex(String s){
         return new AbstractExpression(this, "=~", new Literal(s));
     }
+
+    @Override
+    public LogicalExpression isNull(){return new IsNull(this);}
+
+    @Override
+    public LogicalExpression isNotNull(){return new IsNotNull(this);}
+
+
 }

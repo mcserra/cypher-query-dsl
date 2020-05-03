@@ -132,4 +132,16 @@ class ExpressionTest {
         Assertions.assertEquals("'Peter' CONTAINS 'ete'", a.asString());
     }
 
+    @Test
+    void isNull(){
+        LogicalExpression a = new Selector("person").prop("belt").isNull();
+        Assertions.assertEquals("person.belt IS NULL ", a.asString());
+    }
+
+    @Test
+    void isNotNull(){
+        LogicalExpression a = new Selector("Tom").prop("age").isNotNull();
+        Assertions.assertEquals("Tom.age IS NOT NULL ", a.asString());
+    }
+
 }

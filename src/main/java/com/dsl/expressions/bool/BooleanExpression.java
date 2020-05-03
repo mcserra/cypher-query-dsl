@@ -41,4 +41,9 @@ public interface BooleanExpression extends Expression {
     LogicalExpression contains(String s);
 
     LogicalExpression matchRegex(String s);
+
+    LogicalExpression isNull();
+
+    LogicalExpression isNotNull();
+
 }
