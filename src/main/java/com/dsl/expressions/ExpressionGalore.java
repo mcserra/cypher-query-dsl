@@ -2,6 +2,7 @@ package com.dsl.expressions;
 
 import com.dsl.AsString;
 import com.dsl.StringUtils;
+import com.dsl.expressions.bool.AbstractBooleanExpression;
 import com.dsl.expressions.param.Literal;
 
 /**

@@ -1,6 +1,6 @@
 package com.dsl.expressions.param;
 
-import com.dsl.expressions.AbstractBooleanExpression;
+import com.dsl.expressions.bool.AbstractBooleanExpression;
 
 /**
  * Represents an expression that can be used in combination with another expression, representing a Boolean or Logical
