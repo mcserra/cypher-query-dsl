@@ -14,6 +14,7 @@ import com.dsl.clauses.SkipClause;
 import com.dsl.clauses.WhereClause;
 import com.dsl.clauses.WithClause;
 import com.dsl.expressions.Expression;
+import com.dsl.expressions.bool.EqualityExpression;
 import com.dsl.expressions.logical.LogicalExpression;
 import com.dsl.expressions.logical.LogicalOperator;
 import com.dsl.expressions.param.FinalExpression;
@@ -110,23 +111,23 @@ public class ClauseBuilder
         return this;
     }
 
-     @Override
-     public AfterWhere where(final LogicalExpression logicalExpression) {
-         clauses.add(new WhereClause(logicalExpression));
-         return this;
-     }
+    @Override
+    public AfterWhere where(final LogicalExpression logicalExpression) {
+        clauses.add(new WhereClause(logicalExpression));
+        return this;
+    }
 
-     @Override
-     public AfterWhere where(final String expression) {
-         clauses.add(new WhereClause(expression));
-         return this;
-     }
+    @Override
+    public AfterWhere where(final String expression) {
+        clauses.add(new WhereClause(expression));
+        return this;
+    }
 
-     @Override
-     public AfterWhere where(final PathExpression pathExpression) {
-         clauses.add(new WhereClause(pathExpression));
-         return this;
-     }
+    @Override
+    public AfterWhere where(final PathExpression pathExpression) {
+        clauses.add(new WhereClause(pathExpression));
+        return this;
+    }
 
     @Override
     public AfterWhere and(String expression) {
@@ -284,6 +285,28 @@ public class ClauseBuilder
             super(clauseBuilder);
         }
 
+        public AfterMerge onMatch(EqualityExpression... equalityExpressions) {
+            clauseBuilder.getLast(MergeClause.class).addOnMatch(equalityExpressions);
+            return this;
+        }
+
+        public AfterMerge onCreate(EqualityExpression... equalityExpressions) {
+            clauseBuilder.getLast(MergeClause.class).addOnCreate(equalityExpressions);
+            return this;
+        }
+
+        @Override
+        public AfterMerge onMatch(String equalityExpressions) {
+            clauseBuilder.getLast(MergeClause.class).addOnMatch(equalityExpressions);
+            return this;
+        }
+
+        @Override
+        public AfterMerge onCreate(String equalityExpressions) {
+            clauseBuilder.getLast(MergeClause.class).addOnCreate(equalityExpressions);
+            return this;
+        }
+
         private AfterMergeImpl init() {
             setT(this, MergeClause.class);
             return this;
@@ -292,7 +315,7 @@ public class ClauseBuilder
 
     private abstract static class PathExpressionAppender<T, U extends PathExpressionClause> {
 
-        private final ClauseBuilder clauseBuilder;
+        protected final ClauseBuilder clauseBuilder;
         private Class<U> uClass;
         private T t;
 

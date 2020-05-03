@@ -1,8 +1,7 @@
-package com.dsl.expressions;
+package com.dsl.expressions.bool;
 
-import com.dsl.expressions.bool.BooleanExpression;
-import com.dsl.expressions.bool.Contains;
-import com.dsl.expressions.bool.In;
+import com.dsl.expressions.AbstractExpression;
+import com.dsl.expressions.Expression;
 import com.dsl.expressions.logical.ConditionalAbstractExpression;
 import com.dsl.expressions.logical.LogicalExpression;
 import com.dsl.expressions.param.As;
@@ -15,7 +14,12 @@ import com.dsl.expressions.param.Variable;
  * Common methods for all expressions
  */
 public abstract class AbstractBooleanExpression extends ConditionalAbstractExpression implements BooleanExpression,
-    SelectorExpression, LogicalExpression {
+    SelectorExpression, LogicalExpression, EqualityExpression {
+
+    @Override
+    public EqualityExpression set(FinalExpression expression) {
+        return new AbstractExpression(this, "=", expression);
+    }
 
     @Override
     public LogicalExpression eq(Object o) {
