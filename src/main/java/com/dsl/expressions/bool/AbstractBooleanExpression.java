@@ -115,6 +115,9 @@ public abstract class AbstractBooleanExpression extends ConditionalAbstractExpre
     public LogicalExpression startsWith(String s){ return new AbstractExpression(this, "STARTS WITH", new Literal(s));}
 
     @Override
+    public LogicalExpression endsWith(String s){ return new AbstractExpression(this, "ENDS WITH", new Literal(s));}
+
+    @Override
     public LogicalExpression isNull(){return new AbstractExpression(this, "IS NULL", null);}
 
     @Override

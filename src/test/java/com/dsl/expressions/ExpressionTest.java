@@ -139,6 +139,12 @@ class ExpressionTest {
     }
 
     @Test
+    void endsWith(){
+        LogicalExpression a = new Literal("Winter").endsWith("ter");
+        Assertions.assertEquals("'Winter' ENDS WITH 'ter'", a.asString());
+    }
+
+    @Test
     void isNull(){
         LogicalExpression a = new Selector("person").prop("belt").isNull();
         Assertions.assertEquals("person.belt IS NULL ", a.asString());
