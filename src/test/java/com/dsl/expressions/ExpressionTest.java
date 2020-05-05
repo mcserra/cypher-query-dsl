@@ -133,6 +133,12 @@ class ExpressionTest {
     }
 
     @Test
+    void startsWith(){
+        LogicalExpression a = new Literal("Summer").startsWith("Sum");
+        Assertions.assertEquals("'Summer' STARTS WITH 'Sum'", a.asString());
+    }
+
+    @Test
     void isNull(){
         LogicalExpression a = new Selector("person").prop("belt").isNull();
         Assertions.assertEquals("person.belt IS NULL ", a.asString());
