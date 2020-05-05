@@ -45,6 +45,8 @@ public interface BooleanExpression extends Expression {
 
     LogicalExpression startsWith(String s);
 
+    LogicalExpression endsWith(String s);
+
     LogicalExpression isNull();
 
     LogicalExpression isNotNull();
