@@ -132,4 +132,10 @@ class ExpressionTest {
         Assertions.assertEquals("'Peter' CONTAINS 'ete'", a.asString());
     }
 
+    @Test
+    void startsWith(){
+        LogicalExpression a = new Literal("Summer").startsWith("Sum");
+        Assertions.assertEquals("'Summer' STARTS WITH 'Sum'", a.asString());
+    }
+
 }
