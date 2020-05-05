@@ -112,10 +112,10 @@ public abstract class AbstractBooleanExpression extends ConditionalAbstractExpre
     }
 
     @Override
-    public LogicalExpression isNull(){return new IsNull(this);}
+    public LogicalExpression isNull(){return new AbstractExpression(this, "IS NULL", null);}
 
     @Override
-    public LogicalExpression isNotNull(){return new IsNotNull(this);}
+    public LogicalExpression isNotNull(){return new AbstractExpression(this, "IS NOT NULL", null);}
 
 
 }
