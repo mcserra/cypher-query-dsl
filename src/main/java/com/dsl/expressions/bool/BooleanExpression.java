@@ -44,4 +44,9 @@ public interface BooleanExpression extends Expression {
     LogicalExpression matchRegex(String s);
 
     LogicalExpression startsWith(String s);
+
+    LogicalExpression isNull();
+
+    LogicalExpression isNotNull();
+
 }
