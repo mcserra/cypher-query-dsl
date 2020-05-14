@@ -3,12 +3,14 @@ package com.dsl;
 import com.dsl.clauses.CreateClause;
 import com.dsl.clauses.MatchClause;
 import com.dsl.clauses.MergeClause;
+import com.dsl.clauses.UnwindClause;
 import com.dsl.clauses.WithClause;
 import com.dsl.clauses.linking.AfterCreate;
 import com.dsl.clauses.linking.AfterMatch;
 import com.dsl.clauses.linking.AfterMerge;
 import com.dsl.clauses.linking.AfterWith;
 import com.dsl.clauses.linking.ClauseBuilder;
+import com.dsl.clauses.linking.UnwindAlias;
 import com.dsl.expressions.aggregating.Average;
 import com.dsl.expressions.aggregating.Collect;
 import com.dsl.expressions.aggregating.Count;
@@ -34,10 +36,19 @@ import com.dsl.expressions.path.Path;
 import com.dsl.expressions.path.PathExpression;
 
 import java.time.LocalDate;
+import java.util.Collection;
 
 public class Query {
 
     private Query() {
+    }
+
+    public static UnwindAlias unwind(Collection<?> collection) {
+        return new ClauseBuilder().unwind(UnwindClause.collectionUnwind(collection));
+    }
+
+    public static UnwindAlias unwind(Variable var) {
+        return new ClauseBuilder().unwind((UnwindClause.varUnwind(var)));
     }
 
     public static AfterWith with(FinalExpression... finalExpression) {

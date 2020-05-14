@@ -1,6 +1,7 @@
 package com.dsl.clauses.linking;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -326,5 +327,47 @@ class ClauseBuilderTest {
             .onMatch("n.createDate = $date").asString();
         Assertions.assertEquals(
             "MERGE (n:Name {name: 'Fred'}) ON MATCH SET n.createDate = $date ON CREATE SET n.updateDate = $date", s);
+    }
+
+    @Test
+    void unwindTest() {
+        String s = unwind(var("events")).as("event")
+            .merge((node("y:Year").props("year", "event.year")))
+            .merge(node("y").left().rel(":IN").to("e:Event").props("id", "event.id"))
+            .returns("e.id")
+            .orderBy("x").asString();
+
+            Assertions.assertEquals("UNWIND $events AS event MERGE (y:Year {year: event.year}) " +
+                    "MERGE (y)<-[:IN]-(e:Event {id: event.id}) " +
+                    "RETURN e.id " +
+                "ORDER BY x", s);
+    }
+
+    @Test
+    void unwindTestWithCollection() {
+        String s = unwind(List.of("a", "b", "c")).as("event")
+            .merge((node("y:Year").props("year", "event.year")))
+            .merge(node("y").left().rel(":IN").to("e:Event").props("id", "event.id"))
+            .returns("e.id")
+            .orderBy("x").asString();
+
+        Assertions.assertEquals("UNWIND [a, b, c] AS event MERGE (y:Year {year: event.year}) " +
+            "MERGE (y)<-[:IN]-(e:Event {id: event.id}) " +
+            "RETURN e.id " +
+            "ORDER BY x", s);
+    }
+
+    @Test
+    void unwindTestWithSubCollection() {
+        String s = unwind(List.of("a", List.of("d", "e"), "c")).as("event")
+            .merge((node("y:Year").props("year", "event.year")))
+            .merge(node("y").left().rel(":IN").to("e:Event").props("id", "event.id"))
+            .returns("e.id")
+            .orderBy("x").asString();
+
+        Assertions.assertEquals("UNWIND [a, [d, e], c] AS event MERGE (y:Year {year: event.year}) " +
+            "MERGE (y)<-[:IN]-(e:Event {id: event.id}) " +
+            "RETURN e.id " +
+            "ORDER BY x", s);
     }
 }
