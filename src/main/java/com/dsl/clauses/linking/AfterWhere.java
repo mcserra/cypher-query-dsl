@@ -3,7 +3,7 @@ package com.dsl.clauses.linking;
 import com.dsl.AsString;
 import com.dsl.expressions.logical.LogicalExpression;
 
-public interface AfterWhere extends AsString, With, Match, Returns, Create {
+public interface AfterWhere extends AsString, With, Match, Returns, Create, Unwind {
     AfterWhere and(String expression);
 
     AfterWhere and(LogicalExpression logicalExpression);

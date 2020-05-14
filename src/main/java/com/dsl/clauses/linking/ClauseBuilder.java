@@ -11,6 +11,7 @@ import com.dsl.clauses.OrderByClause;
 import com.dsl.clauses.PathExpressionClause;
 import com.dsl.clauses.ReturnClause;
 import com.dsl.clauses.SkipClause;
+import com.dsl.clauses.UnwindClause;
 import com.dsl.clauses.WhereClause;
 import com.dsl.clauses.WithClause;
 import com.dsl.expressions.Expression;
@@ -24,15 +25,18 @@ import com.dsl.expressions.param.Variable;
 import com.dsl.expressions.path.PathExpression;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class ClauseBuilder
-    implements AsString, AfterWith, WithAlias, AfterWhere, AfterReturns, AfterLimit, AfterSkip, AfterOrderBy, Where {
+    implements AsString, AfterWith, WithAlias, AfterWhere, AfterReturns, AfterLimit, AfterSkip, AfterOrderBy, Where,
+    Unwind, AfterUnwind {
 
     private final List<Clause> clauses = new ArrayList<>();
     private AfterCreateImpl afterCreateImpl;
     private AfterMatchImpl afterMatchImpl;
     private AfterMergeImpl afterMergeImpl;
+    private UnwindAliasImpl unwindAlias;
 
     public ClauseBuilder(final Clause clause) {
         init(clause);
@@ -41,17 +45,22 @@ public class ClauseBuilder
     public ClauseBuilder() {
     }
 
-    public AfterMatchImpl match(final Clause clause) {
+    public UnwindAliasImpl unwind(final UnwindClause clause) {
+        init(clause);
+        return unwindAlias;
+    }
+
+    public AfterMatchImpl match(final MatchClause clause) {
         init(clause);
         return afterMatchImpl;
     }
 
-    public AfterMergeImpl merge(final Clause clause) {
+    public AfterMergeImpl merge(final MergeClause clause) {
         init(clause);
         return afterMergeImpl;
     }
 
-    public AfterCreateImpl create(final Clause clause) {
+    public AfterCreateImpl create(final CreateClause clause) {
         init(clause);
         return afterCreateImpl;
     }
@@ -60,6 +69,7 @@ public class ClauseBuilder
         afterCreateImpl = new AfterCreateImpl(this).init();
         afterMatchImpl = new AfterMatchImpl(this).init();
         afterMergeImpl = new AfterMergeImpl(this).init();
+        unwindAlias = new UnwindAliasImpl(this);
         clauses.add(clause);
     }
 
@@ -245,6 +255,18 @@ public class ClauseBuilder
         return this;
     }
 
+    @Override
+    public UnwindAlias unwind(Collection<?> a) {
+        clauses.add(UnwindClause.collectionUnwind(a));
+        return new UnwindAliasImpl(this);
+    }
+
+    @Override
+    public UnwindAlias unwind(Variable var) {
+        clauses.add(UnwindClause.varUnwind(var));
+        return new UnwindAliasImpl(this);
+    }
+
     private <T> T getLast(final Class<T> clazz) {
         Clause exp = clauses.get(clauses.size() - 1);
         return (T) exp;
@@ -264,6 +286,19 @@ public class ClauseBuilder
         private AfterCreateImpl init() {
             setT(this, CreateClause.class);
             return this;
+        }
+    }
+
+    public static class UnwindAliasImpl
+        extends PathExpressionAppender<AfterCreate, CreateClause> implements ClauseImpl, UnwindAlias {
+        private UnwindAliasImpl(ClauseBuilder clauseBuilder) {
+            super(clauseBuilder);
+        }
+
+        @Override
+        public AfterUnwind as(String as) {
+            clauseBuilder.getLast(UnwindClause.class).as(as);
+            return clauseBuilder;
         }
     }
 

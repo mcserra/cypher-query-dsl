@@ -2,7 +2,6 @@ package com.dsl.clauses;
 
 import com.dsl.StringUtils;
 import com.dsl.expressions.Expression;
-import com.dsl.expressions.param.FinalExpression;
 
 public class ReturnClause implements Clause {
     Expression[] expressions;
