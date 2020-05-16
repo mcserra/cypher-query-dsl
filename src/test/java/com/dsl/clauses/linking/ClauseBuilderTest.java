@@ -72,6 +72,22 @@ class ClauseBuilderTest {
     }
 
     @Test
+    void whereNotTest() {
+        String query =
+            match()
+                .path(node("person:Person"))
+                .path(node("peter:Person"))
+            .where(not(node("person").right().node("peter")))
+            .returns("person.name", "person.age")
+            .asString();
+
+        Assertions.assertEquals(
+            "MATCH (person:Person), (peter:Person)" +
+            " WHERE NOT ((person)-->(peter))" +
+            " RETURN person.name, person.age", query);
+    }
+
+    @Test
     void whereDoubleAndTest() {
         String query =
             match()
