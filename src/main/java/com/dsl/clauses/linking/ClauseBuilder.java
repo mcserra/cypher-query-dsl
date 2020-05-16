@@ -33,7 +33,7 @@ import java.util.List;
 
 public class ClauseBuilder
     implements AsString, AfterWith, AfterWhere, AfterReturns, AfterLimit, AfterSkip, AfterOrderBy,
-    Unwind, AfterUnwind, AfterSet, SetEquals, Set, SetProp {
+    Unwind, AfterUnwind, AfterSet, SetEquals, Set, SetProp, WithSelect {
 
     private final List<Clause> clauses = new ArrayList<>();
     private AfterCreateImpl afterCreateImpl;
@@ -135,7 +135,7 @@ public class ClauseBuilder
     }
 
     @Override
-    public AfterWith with() {
+    public WithSelect with() {
         clauses.add(new WithClause());
         return this;
     }
