@@ -1,6 +1,5 @@
 package com.dsl.clauses.linking;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
@@ -38,9 +37,10 @@ class ClauseBuilderTest {
                 .path(node("n:Name"))
                 .with()
                 .select("n.name").as("name")
+                .select("n.code").as("code")
                 .asString();
 
-        Assertions.assertEquals("MATCH (n:Name) WITH n.name AS name", query);
+        Assertions.assertEquals("MATCH (n:Name) WITH n.name AS name, n.code AS code", query);
     }
 
     @Test
@@ -48,13 +48,14 @@ class ClauseBuilderTest {
         String query =
             with()
                 .select(select("9"))
+                .select(select("k")).as("code")
                 .optMatch()
                 .path(node("n"))
                 .match()
                 .path(node("k"))
                 .asString();
 
-        Assertions.assertEquals("WITH 9 OPTIONAL MATCH (n) MATCH (k)", query);
+        Assertions.assertEquals("WITH 9, k AS code OPTIONAL MATCH (n) MATCH (k)", query);
     }
 
     @Test
@@ -362,10 +363,40 @@ class ClauseBuilderTest {
         String s = unwind(List.of("a", List.of("d", "e"), "c")).as("event")
             .merge((node("y:Year").props("year", "event.year")))
             .merge(node("y").left().rel(":IN").to("e:Event").props("id", "event.id"))
-            .returns("e.id")
+            .returns("e.id").as("x")
             .orderBy("x").asString();
 
         Assertions.assertEquals("UNWIND [a, [d, e], c] AS event MERGE (y:Year {year: event.year}) " +
+            "MERGE (y)<-[:IN]-(e:Event {id: event.id}) " +
+            "RETURN e.id AS x " +
+            "ORDER BY x", s);
+    }
+
+    @Test
+    void unwindFromClauseTestWithSubCollection() {
+        String s = match(node("s"))
+        .unwind(List.of("a", List.of("d", "e"), "c")).as("event")
+            .merge((node("y:Year").props("year", "event.year")))
+            .merge(node("y").left().rel(":IN").to("e:Event").props("id", "event.id"))
+            .returns("e.id").as("x")
+            .orderBy("x").asString();
+
+        Assertions.assertEquals("MATCH (s) UNWIND [a, [d, e], c] AS event MERGE (y:Year {year: event.year}) " +
+            "MERGE (y)<-[:IN]-(e:Event {id: event.id}) " +
+            "RETURN e.id AS x " +
+            "ORDER BY x", s);
+    }
+
+    @Test
+    void unwindFromClauseTest() {
+        String s =  match().path(node("s"))
+            .unwind(var("events")).as("event")
+            .merge((node("y:Year").props("year", "event.year")))
+            .merge(node("y").left().rel(":IN").to("e:Event").props("id", "event.id"))
+            .returns("e.id")
+            .orderBy("x").asString();
+
+        Assertions.assertEquals("MATCH (s) UNWIND $events AS event MERGE (y:Year {year: event.year}) " +
             "MERGE (y)<-[:IN]-(e:Event {id: event.id}) " +
             "RETURN e.id " +
             "ORDER BY x", s);

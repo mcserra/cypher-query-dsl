@@ -2,6 +2,7 @@ package com.dsl.clauses.linking;
 
 import com.dsl.AsString;
 import com.dsl.StringUtils;
+import com.dsl.clauses.Alias;
 import com.dsl.clauses.Clause;
 import com.dsl.clauses.CreateClause;
 import com.dsl.clauses.LimitClause;
@@ -29,7 +30,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class ClauseBuilder
-    implements AsString, AfterWith, WithAlias, AfterWhere, AfterReturns, AfterLimit, AfterSkip, AfterOrderBy, Where,
+    implements AsString, AfterWith, AfterWhere, AfterReturns, AfterLimit, AfterSkip, AfterOrderBy, Where,
     Unwind, AfterUnwind {
 
     private final List<Clause> clauses = new ArrayList<>();
@@ -37,6 +38,8 @@ public class ClauseBuilder
     private AfterMatchImpl afterMatchImpl;
     private AfterMergeImpl afterMergeImpl;
     private UnwindAliasImpl unwindAlias;
+    private WithAliasImpl withAlias;
+    private ReturnAliasImpl returnAlias;
 
     public ClauseBuilder(final Clause clause) {
         init(clause);
@@ -66,10 +69,12 @@ public class ClauseBuilder
     }
 
     private void init(final Clause clause) {
-        afterCreateImpl = new AfterCreateImpl(this).init();
-        afterMatchImpl = new AfterMatchImpl(this).init();
-        afterMergeImpl = new AfterMergeImpl(this).init();
-        unwindAlias = new UnwindAliasImpl(this);
+        afterCreateImpl = new AfterCreateImpl().init(this);
+        afterMatchImpl = new AfterMatchImpl().init(this);
+        afterMergeImpl = new AfterMergeImpl().init(this);
+        unwindAlias = new UnwindAliasImpl().init(this);
+        withAlias = new WithAliasImpl().init(this);
+        returnAlias = new ReturnAliasImpl().init(this);
         clauses.add(clause);
     }
 
@@ -88,19 +93,13 @@ public class ClauseBuilder
     @Override
     public WithAlias select(final FinalExpression finalExpression) {
         getLast(WithClause.class).addExpression(finalExpression);
-        return this;
+        return withAlias;
     }
 
     @Override
     public WithAlias select(String expression) {
         getLast(WithClause.class).addExpression(new Selector(expression));
-        return this;
-    }
-
-    @Override
-    public AfterWith as(String selector) {
-        getLast(WithClause.class).addSelector(selector);
-        return this;
+        return withAlias;
     }
 
     @Override
@@ -176,23 +175,23 @@ public class ClauseBuilder
     }
 
     @Override
-    public AfterReturns returns(Expression... e) {
+    public ReturnAlias returns(Expression... e) {
         clauses.add(new ReturnClause(e));
-        return this;
+        return returnAlias;
     }
 
     @Override
-    public AfterReturns returns(String... e) {
+    public ReturnAlias returns(String... e) {
         Selector[] ls = new Selector[e.length];
         for (int i = 0; i < e.length; i++) {
             ls[i] = new Selector(e[i]);
         }
         this.clauses.add(new ReturnClause(ls));
-        return this;
+        return returnAlias;
     }
 
     @Override
-    public AfterReturns returns(Object... e) {
+    public ReturnAlias returns(Object... e) {
         Expression[] ls = new Expression[e.length];
         for (int i = 0; i < e.length; i++) {
             if (e[i] instanceof String) {
@@ -204,7 +203,7 @@ public class ClauseBuilder
             }
         }
         this.clauses.add(new ReturnClause(ls));
-        return this;
+        return returnAlias;
     }
 
     @Override
@@ -258,13 +257,13 @@ public class ClauseBuilder
     @Override
     public UnwindAlias unwind(Collection<?> a) {
         clauses.add(UnwindClause.collectionUnwind(a));
-        return new UnwindAliasImpl(this);
+        return unwindAlias;
     }
 
     @Override
     public UnwindAlias unwind(Variable var) {
         clauses.add(UnwindClause.varUnwind(var));
-        return new UnwindAliasImpl(this);
+        return unwindAlias;
     }
 
     private <T> T getLast(final Class<T> clazz) {
@@ -277,88 +276,123 @@ public class ClauseBuilder
         return String.join(" ", StringUtils.asString(clauses));
     }
 
-    private static class AfterCreateImpl
-        extends PathExpressionAppender<AfterCreate, CreateClause> implements ClauseImpl, AfterCreate {
-        private AfterCreateImpl(ClauseBuilder clauseBuilder) {
-            super(clauseBuilder);
-        }
+    private static class ReturnAliasImpl extends AliasExpressionResolver<AfterReturns, ReturnClause>
+        implements ClauseImpl, ReturnAlias {
 
-        private AfterCreateImpl init() {
-            setT(this, CreateClause.class);
+        private ReturnAliasImpl init(ClauseBuilder clauseBuilder) {
+            start(this, ReturnClause.class, clauseBuilder);
             return this;
         }
     }
 
-    public static class UnwindAliasImpl
-        extends PathExpressionAppender<AfterCreate, CreateClause> implements ClauseImpl, UnwindAlias {
-        private UnwindAliasImpl(ClauseBuilder clauseBuilder) {
-            super(clauseBuilder);
-        }
+    private static class WithAliasImpl extends AliasExpressionResolver<AfterWith, WithClause> implements ClauseImpl, WithAlias {
 
-        @Override
-        public AfterUnwind as(String as) {
-            clauseBuilder.getLast(UnwindClause.class).as(as);
-            return clauseBuilder;
+        private WithAliasImpl init(ClauseBuilder clauseBuilder) {
+            start(this, WithClause.class, clauseBuilder);
+            return this;
+        }
+    }
+
+    public static class UnwindAliasImpl extends AliasExpressionResolver<AfterUnwind, UnwindClause>
+        implements ClauseImpl, UnwindAlias, AfterUnwind {
+
+        private UnwindAliasImpl init(ClauseBuilder clauseBuilder) {
+            start(this, UnwindClause.class, clauseBuilder);
+            return this;
+        }
+    }
+
+    private static class AfterCreateImpl
+        extends PathExpressionAppender<AfterCreate, CreateClause> implements ClauseImpl, AfterCreate {
+
+        private AfterCreateImpl init(ClauseBuilder clauseBuilder) {
+            start(this, CreateClause.class, clauseBuilder);
+            return this;
         }
     }
 
     private static class AfterMatchImpl
         extends PathExpressionAppender<AfterMatch, MatchClause> implements AfterMatch, ClauseImpl {
-        private AfterMatchImpl(ClauseBuilder clauseBuilder) {
-            super(clauseBuilder);
-        }
 
-        private AfterMatchImpl init() {
-            setT(this, MatchClause.class);
+        private AfterMatchImpl init(ClauseBuilder clauseBuilder) {
+            start(this, MatchClause.class, clauseBuilder);
             return this;
         }
     }
 
     private static class AfterMergeImpl
         extends PathExpressionAppender<AfterMerge, MergeClause> implements AfterMerge, ClauseImpl {
-        private AfterMergeImpl(ClauseBuilder clauseBuilder) {
-            super(clauseBuilder);
+
+        private AfterMergeImpl init(ClauseBuilder clauseBuilder) {
+            start(this, MergeClause.class, clauseBuilder);
+            return this;
         }
 
         public AfterMerge onMatch(EqualityExpression... equalityExpressions) {
-            clauseBuilder.getLast(MergeClause.class).addOnMatch(equalityExpressions);
+            getClauseBuilder().getLast(MergeClause.class).addOnMatch(equalityExpressions);
             return this;
         }
 
         public AfterMerge onCreate(EqualityExpression... equalityExpressions) {
-            clauseBuilder.getLast(MergeClause.class).addOnCreate(equalityExpressions);
+            getClauseBuilder().getLast(MergeClause.class).addOnCreate(equalityExpressions);
             return this;
         }
 
         @Override
         public AfterMerge onMatch(String equalityExpressions) {
-            clauseBuilder.getLast(MergeClause.class).addOnMatch(equalityExpressions);
+            getClauseBuilder().getLast(MergeClause.class).addOnMatch(equalityExpressions);
             return this;
         }
 
         @Override
         public AfterMerge onCreate(String equalityExpressions) {
-            clauseBuilder.getLast(MergeClause.class).addOnCreate(equalityExpressions);
+            getClauseBuilder().getLast(MergeClause.class).addOnCreate(equalityExpressions);
             return this;
         }
 
-        private AfterMergeImpl init() {
-            setT(this, MergeClause.class);
-            return this;
+    }
+
+    private abstract static class AliasExpressionResolver<T, U extends Alias> {
+        protected ClauseBuilder clauseBuilder;
+        private Class<U> uClass;
+        private T t;
+
+        public void start(T t, Class<U> uClass, ClauseBuilder clauseBuilder) {
+            this.t = t;
+            this.uClass = uClass;
+            this.clauseBuilder = clauseBuilder;
+        }
+
+        public ClauseBuilder getClauseBuilder() {
+            return clauseBuilder;
+        }
+
+        public ClauseBuilder clauseBuilder() {
+            return clauseBuilder;
+        }
+
+        public T as(String as) {
+            clauseBuilder.getLast(uClass).setAs(as);
+            return t;
+        }
+
+        public String asString() {
+            return clauseBuilder.asString();
         }
     }
 
     private abstract static class PathExpressionAppender<T, U extends PathExpressionClause> {
 
-        protected final ClauseBuilder clauseBuilder;
+        private ClauseBuilder clauseBuilder;
         private Class<U> uClass;
         private T t;
 
-        public PathExpressionAppender(ClauseBuilder clauseBuilder) {
-            this.clauseBuilder = clauseBuilder;
+        public ClauseBuilder getClauseBuilder() {
+            return clauseBuilder;
         }
 
-        public void setT(T t, Class<U> uClass) {
+        public void start(T t, Class<U> uClass, ClauseBuilder clauseBuilder) {
+            this.clauseBuilder = clauseBuilder;
             this.t = t;
             this.uClass = uClass;
         }

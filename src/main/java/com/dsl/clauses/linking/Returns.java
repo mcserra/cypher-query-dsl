@@ -4,9 +4,9 @@ import com.dsl.expressions.Expression;
 
 public interface Returns {
 
-    AfterReturns returns(Expression... e);
+    ReturnAlias returns(Expression... e);
 
-    AfterReturns returns(String... e);
+    ReturnAlias returns(String... e);
 
-    AfterReturns returns(Object... e);
+    ReturnAlias returns(Object... e);
 }
