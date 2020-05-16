@@ -294,10 +294,25 @@ class ClauseBuilderTest {
     }
 
     @Test
+    void createSinglePath() {
+        String s = create(node("n:Name").props("name", "'Fred'"))
+            .returns(select("n").prop("name")).limit(1).asString();
+        Assertions.assertEquals("CREATE (n:Name {name: 'Fred'}) RETURN n.name LIMIT 1", s);
+    }
+
+    @Test
     void createAfterClause() {
         String s = match(node("n:Name").props("name", "'Fred'"), node("s:Colour").props("colour", "'orange'"))
             .optMatch(node("c:Country"))
             .create(node("n:Name").props("name", "'Mark'")).asString();
+        Assertions.assertEquals("MATCH (n:Name {name: 'Fred'}), (s:Colour {colour: 'orange'}) OPTIONAL MATCH (c:Country) CREATE (n:Name {name: 'Mark'})", s);
+    }
+
+    @Test
+    void createAfterClauseWithPath() {
+        String s = match(node("n:Name").props("name", "'Fred'"), node("s:Colour").props("colour", "'orange'"))
+            .optMatch(node("c:Country"))
+            .create().path(node("n:Name").props("name", "'Mark'")).asString();
         Assertions.assertEquals("MATCH (n:Name {name: 'Fred'}), (s:Colour {colour: 'orange'}) OPTIONAL MATCH (c:Country) CREATE (n:Name {name: 'Mark'})", s);
     }
 

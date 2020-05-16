@@ -17,6 +17,11 @@ public interface ClauseImpl extends Create, Merge, Match, Returns, Where, With, 
         return clauseBuilder().create(pathExpressions);
     }
 
+    @Override
+    default CreatePath create() {
+        return clauseBuilder().create();
+    }
+
     default AfterMatch match(PathExpression... pathExpressions) {
         return clauseBuilder().match(pathExpressions);
     }
