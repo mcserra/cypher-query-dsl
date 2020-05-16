@@ -19,6 +19,6 @@ public class ReturnClause implements Clause, Alias {
     @Override
     public String asString() {
         String asClause = as == null ? "" : String.format(" AS %s", as);
-        return String.format("RETURN %s%s", String.join(", ", StringUtils.asString(expressions)), asClause);
+        return String.format("RETURN %s%s", StringUtils.join(expressions), asClause);
     }
 }

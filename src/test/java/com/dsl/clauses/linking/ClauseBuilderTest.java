@@ -15,9 +15,10 @@ class ClauseBuilderTest {
         String query = match()
             .path(node("n:Name"))
             .path(node("p:Person").right().node("n"))
+            .match(node("n"))
             .asString();
 
-        Assertions.assertEquals("MATCH (n:Name), (p:Person)-->(n)", query);
+        Assertions.assertEquals("MATCH (n:Name), (p:Person)-->(n) MATCH (n)", query);
     }
 
     @Test
@@ -338,10 +339,10 @@ class ClauseBuilderTest {
             .returns("e.id")
             .orderBy("x").asString();
 
-            Assertions.assertEquals("UNWIND $events AS event MERGE (y:Year {year: event.year}) " +
-                    "MERGE (y)<-[:IN]-(e:Event {id: event.id}) " +
-                    "RETURN e.id " +
-                "ORDER BY x", s);
+        Assertions.assertEquals("UNWIND $events AS event MERGE (y:Year {year: event.year}) " +
+            "MERGE (y)<-[:IN]-(e:Event {id: event.id}) " +
+            "RETURN e.id " +
+            "ORDER BY x", s);
     }
 
     @Test
@@ -375,7 +376,7 @@ class ClauseBuilderTest {
     @Test
     void unwindFromClauseTestWithSubCollection() {
         String s = match(node("s"))
-        .unwind(List.of("a", List.of("d", "e"), "c")).as("event")
+            .unwind(List.of("a", List.of("d", "e"), "c")).as("event")
             .merge((node("y:Year").props("year", "event.year")))
             .merge(node("y").left().rel(":IN").to("e:Event").props("id", "event.id"))
             .returns("e.id").as("x")
@@ -389,7 +390,7 @@ class ClauseBuilderTest {
 
     @Test
     void unwindFromClauseTest() {
-        String s =  match().path(node("s"))
+        String s = match().path(node("s"))
             .unwind(var("events")).as("event")
             .merge((node("y:Year").props("year", "event.year")))
             .merge(node("y").left().rel(":IN").to("e:Event").props("id", "event.id"))
@@ -400,5 +401,91 @@ class ClauseBuilderTest {
             "MERGE (y)<-[:IN]-(e:Event {id: event.id}) " +
             "RETURN e.id " +
             "ORDER BY x", s);
+    }
+
+    @Test
+    void testSetProperty() {
+        String s = match().path(node("n").props("name", literal("Andy")))
+            .set().prop(select("n.surname")).setEq(literal("Taylor"))
+            .returns("n.name", "n.surname")
+            .asString();
+
+        Assertions.assertEquals("MATCH (n {name: 'Andy'})" +
+            " SET n.surname = 'Taylor'" +
+            " RETURN n.name, n.surname", s);
+    }
+
+    @Test
+    void testUpdateProperty() {
+        String s = match().path(node("n").props("name", literal("Andy")))
+            .set()
+                .prop(select("n.age")).setEq(asString(1))
+                .prop("n.age").setEq(asString(select("n.age")))
+            .returns("n.name", "n.age")
+            .asString();
+
+        Assertions.assertEquals("MATCH (n {name: 'Andy'})" +
+            " SET n.age = toString(1), n.age = toString(n.age)" +
+            " RETURN n.name, n.age", s);
+    }
+
+    @Test
+    void removeProperty() {
+        String s = match().path(node("n").props("name", literal("Andy")))
+            .set().remove(select("n.age"))
+            .returns("n.name", "n.age")
+            .asString();
+
+        Assertions.assertEquals("MATCH (n {name: 'Andy'})" +
+            " SET n.age = NULL" +
+            " RETURN n.name, n.age", s);
+    }
+
+    @Test
+    void removePropertyString() {
+        String s = match().path(node("n").props("name", literal("Andy")))
+            .set().remove("n.age")
+            .returns("n.name", "n.age")
+            .asString();
+
+        Assertions.assertEquals("MATCH (n {name: 'Andy'})" +
+            " SET n.age = NULL" +
+            " RETURN n.name, n.age", s);
+    }
+
+    @Test
+    void replaceAll() {
+        String s = match().path(node("p").props("name", literal("Andy")))
+            .set().prop(select("p")).setEq(json("name", "'Peter Smith'", "position", "'Entrepreneur'"))
+            .returns("n.name", "n.age")
+            .asString();
+
+        Assertions.assertEquals("MATCH (p {name: 'Andy'})" +
+            " SET p = {name: 'Peter Smith', position: 'Entrepreneur'}" +
+            " RETURN n.name, n.age", s);
+    }
+
+    @Test
+    void removeAll() {
+        String s = match().path(node("p").props("name", literal("Andy")))
+            .set().prop("p").setEq(json())
+            .returns("n.name", "n.age")
+            .asString();
+
+        Assertions.assertEquals("MATCH (p {name: 'Andy'})" +
+            " SET p = {}" +
+            " RETURN n.name, n.age", s);
+    }
+
+    @Test
+    void mutate() {
+        String s = match().path(node("p").props("name", literal("Andy")))
+            .set().prop("p").mut("age", 38, "hungry", true, "position", "'Entrepreneur'")
+            .returns("n.name", "n.age")
+            .asString();
+
+        Assertions.assertEquals("MATCH (p {name: 'Andy'})" +
+            " SET p += {age: 38, hungry: true, position: 'Entrepreneur'}" +
+            " RETURN n.name, n.age", s);
     }
 }

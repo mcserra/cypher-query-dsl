@@ -25,6 +25,16 @@ public interface ClauseImpl extends Create, Merge, Match, Returns, Where, With, 
         return clauseBuilder().optMatch(pathExpressions);
     }
 
+    @Override
+    default MatchPath match() {
+        return clauseBuilder().match();
+    }
+
+    @Override
+    default MatchPath optMatch() {
+        return clauseBuilder().optMatch();
+    }
+
     default AfterWith with() {
         return clauseBuilder().with();
     }
@@ -103,5 +113,12 @@ public interface ClauseImpl extends Create, Merge, Match, Returns, Where, With, 
 
     default WithAlias select(String expression) {
         return clauseBuilder().select(expression);
+    }
+
+
+
+    @Override
+    default SetProp set() {
+        return clauseBuilder().set();
     }
 }

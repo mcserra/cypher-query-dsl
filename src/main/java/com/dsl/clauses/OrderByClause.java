@@ -22,6 +22,6 @@ public class OrderByClause implements Clause {
 
     @Override
     public String asString() {
-        return String.format("ORDER BY %s", String.join(", ", StringUtils.asString(properties)));
+        return String.format("ORDER BY %s", StringUtils.join(properties));
     }
 }

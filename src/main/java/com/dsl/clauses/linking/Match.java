@@ -6,4 +6,8 @@ public interface Match {
     AfterMatch match(PathExpression... pathExpressions);
 
     AfterMatch optMatch(PathExpression... pathExpressions);
+
+    MatchPath match();
+
+    MatchPath optMatch();
 }

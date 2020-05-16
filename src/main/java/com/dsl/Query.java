@@ -10,6 +10,7 @@ import com.dsl.clauses.linking.AfterMatch;
 import com.dsl.clauses.linking.AfterMerge;
 import com.dsl.clauses.linking.AfterWith;
 import com.dsl.clauses.linking.ClauseBuilder;
+import com.dsl.clauses.linking.MatchPath;
 import com.dsl.clauses.linking.UnwindAlias;
 import com.dsl.expressions.aggregating.Average;
 import com.dsl.expressions.aggregating.Collect;
@@ -34,6 +35,7 @@ import com.dsl.expressions.param.Variable;
 import com.dsl.expressions.path.Node;
 import com.dsl.expressions.path.Path;
 import com.dsl.expressions.path.PathExpression;
+import com.dsl.expressions.string.ToString;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -61,6 +63,14 @@ public class Query {
 
     public static AfterMatch optMatch(final PathExpression... pathExpression) {
         return new ClauseBuilder().match(MatchClause.optMatch(pathExpression));
+    }
+
+    public static MatchPath match() {
+        return new ClauseBuilder().match(new MatchClause());
+    }
+
+    public static MatchPath optMatch() {
+        return new ClauseBuilder().match(MatchClause.optMatch());
     }
 
     public static AfterCreate create(PathExpression... pathExpression) {
@@ -141,6 +151,10 @@ public class Query {
 
     public static Literal literal(Object literal) {
         return new Literal(literal);
+    }
+
+    public static String asString(Object o) {
+        return new ToString(o).asString();
     }
 
     public static PathExpression node(String selector) {

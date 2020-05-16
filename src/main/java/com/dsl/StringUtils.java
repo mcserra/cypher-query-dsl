@@ -10,9 +10,29 @@ public final class StringUtils {
     private StringUtils() {
     }
 
+    public static String join(final Object[] t) {
+        return String.join(", ", StringUtils.asString(t));
+    }
+
+    public static <T extends AsString> String join(final T[] t) {
+        return StringUtils.join(t, ", ");
+    }
+
+    public static <T extends AsString> String join(final T[] t, final String separator) {
+        return String.join(separator, StringUtils.asString(t));
+    }
+
     public static <T extends AsString> List<String> asString(final Collection<T> t) {
         List<String> c = new ArrayList<>();
         t.forEach(t1 -> c.add(t1.asString()));
+        return c;
+    }
+
+    public static String[] asString(final Object[] t) {
+        String[] c = new String[t.length];
+        for (int i = 0; i < t.length; i++) {
+            c[i] = t[i].toString();
+        }
         return c;
     }
 
