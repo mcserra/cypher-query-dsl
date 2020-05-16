@@ -329,6 +329,20 @@ class ClauseBuilderTest {
     }
 
     @Test
+    void mergeWithPathsTest() {
+        String s =
+            merge()
+                .path("(s:Person {name: 'Foo'})")
+                .path(node("name:Name").props("name", "'Bar'"))
+            .merge()
+                .path(node("name1:Name").props("name", "'Carson'"))
+                .asString();
+        Assertions.assertEquals("" +
+            "MERGE (s:Person {name: 'Foo'}), (name:Name {name: 'Bar'})"
+            + " MERGE (name1:Name {name: 'Carson'})", s);
+    }
+
+    @Test
     void onCreateWithExpression() {
         String s = merge(node("n:Name").props("name", "'Fred'"))
             .onCreate(select("n.updateDate").set(var("date")))
