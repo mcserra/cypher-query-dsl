@@ -93,6 +93,12 @@ public class ClauseBuilder
     }
 
     @Override
+    public CreatePath create() {
+        clauses.add(new CreateClause());
+        return afterCreateImpl;
+    }
+
+    @Override
     public WithAlias select(final FinalExpression finalExpression) {
         getLast(WithClause.class).addExpression(finalExpression);
         return withAlias;
@@ -366,10 +372,22 @@ public class ClauseBuilder
     }
 
     private static class AfterCreateImpl
-        extends PathExpressionAppender<AfterCreate, CreateClause> implements ClauseImpl, AfterCreate {
+        extends PathExpressionAppender<AfterCreate, CreateClause> implements ClauseImpl, AfterCreate, CreatePath {
 
         private AfterCreateImpl init(ClauseBuilder clauseBuilder) {
             start(this, CreateClause.class, clauseBuilder);
+            return this;
+        }
+
+        @Override
+        public AfterCreate path(PathExpression pathExpression) {
+            getClauseBuilder().getLast(CreateClause.class).addExpression(pathExpression);
+            return this;
+        }
+
+        @Override
+        public AfterCreate path(String pathExpression) {
+            getClauseBuilder().getLast(CreateClause.class).addExpression(pathExpression);
             return this;
         }
     }
