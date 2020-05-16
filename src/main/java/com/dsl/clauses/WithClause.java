@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class WithClause implements Clause {
+public class WithClause implements Clause, Alias {
     private final List<FinalExpression> expressions = new ArrayList<>();
 
     public WithClause(final FinalExpression... expressions) {
@@ -19,14 +19,15 @@ public class WithClause implements Clause {
         expressions.add(finalExpression);
     }
 
-    public void addSelector(final String selector) {
-        SelectorExpression s = getLast(SelectorExpression.class);
-        expressions.set(expressions.size() - 1, s.as(selector));
-    }
-
     private <T> T getLast(final Class<T> clazz) {
         FinalExpression exp = expressions.get(expressions.size() - 1);
         return (T) exp;
+    }
+
+    @Override
+    public void setAs(String selector) {
+        SelectorExpression s = getLast(SelectorExpression.class);
+        expressions.set(expressions.size() - 1, s.as(selector));
     }
 
     @Override

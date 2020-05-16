@@ -4,7 +4,7 @@ import com.dsl.expressions.param.Variable;
 
 import java.util.Collection;
 
-public class UnwindClause implements Clause {
+public class UnwindClause implements Clause, Alias {
     private final Collection<?> array;
     private String as;
     private final Variable variable;
@@ -23,7 +23,7 @@ public class UnwindClause implements Clause {
         return new UnwindClause(null, null, variable);
     }
 
-    public void as(final String as) {
+    public void setAs(final String as) {
         this.as = as;
     }
 
