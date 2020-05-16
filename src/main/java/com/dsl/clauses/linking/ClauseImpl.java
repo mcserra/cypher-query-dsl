@@ -9,7 +9,7 @@ import com.dsl.expressions.path.PathExpression;
 
 import java.util.Collection;
 
-public interface ClauseImpl extends Create, Merge, Match, Returns, Where, With, Limit, Skip, OrderBy, Unwind, AfterWith {
+public interface ClauseImpl extends Create, Merge, Match, Returns, Where, With, Limit, Skip, OrderBy, Unwind, AfterWith, WithSelect {
 
     ClauseBuilder clauseBuilder();
 
@@ -40,7 +40,7 @@ public interface ClauseImpl extends Create, Merge, Match, Returns, Where, With, 
         return clauseBuilder().optMatch();
     }
 
-    default AfterWith with() {
+    default WithSelect with() {
         return clauseBuilder().with();
     }
 
@@ -119,8 +119,6 @@ public interface ClauseImpl extends Create, Merge, Match, Returns, Where, With, 
     default WithAlias select(String expression) {
         return clauseBuilder().select(expression);
     }
-
-
 
     @Override
     default SetProp set() {

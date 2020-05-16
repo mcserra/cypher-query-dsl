@@ -13,6 +13,7 @@ import com.dsl.clauses.linking.ClauseBuilder;
 import com.dsl.clauses.linking.CreatePath;
 import com.dsl.clauses.linking.MatchPath;
 import com.dsl.clauses.linking.UnwindAlias;
+import com.dsl.clauses.linking.WithSelect;
 import com.dsl.expressions.aggregating.Average;
 import com.dsl.expressions.aggregating.Collect;
 import com.dsl.expressions.aggregating.Count;
@@ -56,6 +57,10 @@ public class Query {
 
     public static AfterWith with(FinalExpression... finalExpression) {
         return new ClauseBuilder(new WithClause(finalExpression));
+    }
+
+    public static WithSelect with() {
+        return new ClauseBuilder(new WithClause());
     }
 
     public static AfterMatch match(PathExpression... pathExpression) {
