@@ -11,6 +11,7 @@ import com.dsl.clauses.MergeClause;
 import com.dsl.clauses.OrderByClause;
 import com.dsl.clauses.PathExpressionClause;
 import com.dsl.clauses.ReturnClause;
+import com.dsl.clauses.SetClause;
 import com.dsl.clauses.SkipClause;
 import com.dsl.clauses.UnwindClause;
 import com.dsl.clauses.WhereClause;
@@ -20,6 +21,7 @@ import com.dsl.expressions.bool.EqualityExpression;
 import com.dsl.expressions.logical.LogicalExpression;
 import com.dsl.expressions.logical.LogicalOperator;
 import com.dsl.expressions.param.FinalExpression;
+import com.dsl.expressions.param.Json;
 import com.dsl.expressions.param.Property;
 import com.dsl.expressions.param.Selector;
 import com.dsl.expressions.param.Variable;
@@ -30,8 +32,8 @@ import java.util.Collection;
 import java.util.List;
 
 public class ClauseBuilder
-    implements AsString, AfterWith, AfterWhere, AfterReturns, AfterLimit, AfterSkip, AfterOrderBy, Where,
-    Unwind, AfterUnwind {
+    implements AsString, AfterWith, AfterWhere, AfterReturns, AfterLimit, AfterSkip, AfterOrderBy,
+    Unwind, AfterUnwind, AfterSet, SetEquals, Set, SetProp {
 
     private final List<Clause> clauses = new ArrayList<>();
     private AfterCreateImpl afterCreateImpl;
@@ -111,6 +113,18 @@ public class ClauseBuilder
     @Override
     public AfterMatch optMatch(PathExpression... pathExpressions) {
         clauses.add(MatchClause.optMatch(pathExpressions));
+        return afterMatchImpl;
+    }
+
+    @Override
+    public MatchPath match() {
+        clauses.add(new MatchClause());
+        return afterMatchImpl;
+    }
+
+    @Override
+    public MatchPath optMatch() {
+        clauses.add(MatchClause.optMatch());
         return afterMatchImpl;
     }
 
@@ -266,6 +280,55 @@ public class ClauseBuilder
         return unwindAlias;
     }
 
+    @Override
+    public AfterSet setEq(Object o) {
+        getLast(SetClause.class).setValue(o);
+        return this;
+    }
+
+    @Override
+    public AfterSet setEq(Expression e) {
+        getLast(SetClause.class).setValue(e.asString());
+        return this;
+    }
+
+    @Override
+    public AfterSet mut(Object... o) {
+        getLast(SetClause.class).setValue(new Json(o).asString()).setOperator("+=");
+        return this;
+    }
+
+    @Override
+    public SetEquals prop(String o) {
+
+        getLast(SetClause.class).addClause(new Selector(o));
+        return this;
+    }
+
+    @Override
+    public SetEquals prop(Selector o) {
+        getLast(SetClause.class).addClause(o);
+        return this;
+    }
+
+    @Override
+    public AfterSet remove(Selector o) {
+        getLast(SetClause.class).addClause(o).setValue("NULL");
+        return this;
+    }
+
+    @Override
+    public AfterSet remove(String o) {
+        getLast(SetClause.class).addClause(new Selector(o)).setValue("NULL");
+        return this;
+    }
+
+    @Override
+    public SetProp set() {
+        this.clauses.add(new SetClause());
+        return this;
+    }
+
     private <T> T getLast(final Class<T> clazz) {
         Clause exp = clauses.get(clauses.size() - 1);
         return (T) exp;
@@ -312,10 +375,22 @@ public class ClauseBuilder
     }
 
     private static class AfterMatchImpl
-        extends PathExpressionAppender<AfterMatch, MatchClause> implements AfterMatch, ClauseImpl {
+        extends PathExpressionAppender<AfterMatch, MatchClause> implements AfterMatch, ClauseImpl, MatchPath {
 
         private AfterMatchImpl init(ClauseBuilder clauseBuilder) {
             start(this, MatchClause.class, clauseBuilder);
+            return this;
+        }
+
+        @Override
+        public AfterMatch path(PathExpression pathExpression) {
+            getClauseBuilder().getLast(MatchClause.class).addExpression(pathExpression);
+            return this;
+        }
+
+        @Override
+        public AfterMatch path(String pathExpression) {
+            getClauseBuilder().getLast(MatchClause.class).addExpression(pathExpression);
             return this;
         }
     }
@@ -361,10 +436,6 @@ public class ClauseBuilder
             this.t = t;
             this.uClass = uClass;
             this.clauseBuilder = clauseBuilder;
-        }
-
-        public ClauseBuilder getClauseBuilder() {
-            return clauseBuilder;
         }
 
         public ClauseBuilder clauseBuilder() {

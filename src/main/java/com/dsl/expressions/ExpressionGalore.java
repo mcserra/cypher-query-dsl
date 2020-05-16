@@ -28,7 +28,6 @@ public class ExpressionGalore extends AbstractBooleanExpression implements AsStr
 
     @Override
     public String asString() {
-        String[] ex = StringUtils.asString(expressions);
-        return String.join(", ", ex);
+        return StringUtils.join(expressions);
     }
 }

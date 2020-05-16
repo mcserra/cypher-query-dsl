@@ -4,7 +4,7 @@ import com.dsl.AsString;
 import com.dsl.expressions.bool.EqualityExpression;
 import com.dsl.expressions.path.PathExpression;
 
-public interface AfterMerge extends AsString, With, Match, Returns, Create, Merge, Unwind {
+public interface AfterMerge extends AsString, With, Match, Returns, Create, Merge, Unwind, Set {
     AfterMerge path(PathExpression pathExpression);
 
     AfterMerge path(String pathExpression);

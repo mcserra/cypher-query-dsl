@@ -5,13 +5,14 @@ import com.dsl.expressions.AliasAbstractExpression;
 import com.dsl.expressions.Expression;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
  * Represents a json selector expression.
  */
 public class Json extends AliasAbstractExpression implements SelectorExpression {
-    private Map<String, Object> map = new HashMap<>();
+    private Map<String, Object> map = new LinkedHashMap<>();
 
     public Json(Object... o) {
         fillMap(o);
