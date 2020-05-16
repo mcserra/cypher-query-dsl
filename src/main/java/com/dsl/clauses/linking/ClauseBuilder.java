@@ -87,6 +87,12 @@ public class ClauseBuilder
     }
 
     @Override
+    public MergePath merge() {
+        this.clauses.add(new MergeClause());
+        return afterMergeImpl;
+    }
+
+    @Override
     public AfterCreate create(PathExpression... pathExpressions) {
         clauses.add(new CreateClause(pathExpressions));
         return afterCreateImpl;
@@ -414,7 +420,7 @@ public class ClauseBuilder
     }
 
     private static class AfterMergeImpl
-        extends PathExpressionAppender<AfterMerge, MergeClause> implements AfterMerge, ClauseImpl {
+        extends PathExpressionAppender<AfterMerge, MergeClause> implements AfterMerge, ClauseImpl, MergePath {
 
         private AfterMergeImpl init(ClauseBuilder clauseBuilder) {
             start(this, MergeClause.class, clauseBuilder);

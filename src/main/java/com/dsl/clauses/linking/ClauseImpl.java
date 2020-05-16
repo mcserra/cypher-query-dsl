@@ -64,6 +64,10 @@ public interface ClauseImpl extends Create, Merge, Match, Returns, Where, With, 
         return clauseBuilder().merge(e);
     }
 
+    default MergePath merge() {
+        return clauseBuilder().merge();
+    }
+
     default ReturnAlias returns(String... e) {
         return clauseBuilder().returns(e);
     }

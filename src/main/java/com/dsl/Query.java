@@ -12,6 +12,7 @@ import com.dsl.clauses.linking.AfterWith;
 import com.dsl.clauses.linking.ClauseBuilder;
 import com.dsl.clauses.linking.CreatePath;
 import com.dsl.clauses.linking.MatchPath;
+import com.dsl.clauses.linking.MergePath;
 import com.dsl.clauses.linking.UnwindAlias;
 import com.dsl.clauses.linking.WithSelect;
 import com.dsl.expressions.aggregating.Average;
@@ -89,6 +90,10 @@ public class Query {
 
     public static AfterMerge merge(PathExpression... pathExpression) {
         return new ClauseBuilder().merge(new MergeClause(pathExpression));
+    }
+
+    public static MergePath merge() {
+        return new ClauseBuilder().merge(new MergeClause());
     }
 
     public static Collect collect(SelectorExpression expression) {
