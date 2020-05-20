@@ -17,4 +17,11 @@ public abstract class StringFunction implements AsString {
     public String asString() {
         return String.format("%s(%s)", expression, StringUtils.join(parameters));
     }
+
+    protected static String getString(Object parameter) {
+        if (parameter instanceof AsString) {
+            return ((AsString) parameter).asString();
+        }
+        return parameter.toString();
+    }
 }
