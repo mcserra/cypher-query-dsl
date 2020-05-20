@@ -38,7 +38,19 @@ import com.dsl.expressions.param.Variable;
 import com.dsl.expressions.path.Node;
 import com.dsl.expressions.path.Path;
 import com.dsl.expressions.path.PathExpression;
+import com.dsl.expressions.string.LTrim;
+import com.dsl.expressions.string.Left;
+import com.dsl.expressions.string.RTrim;
+import com.dsl.expressions.string.Replace;
+import com.dsl.expressions.string.Reverse;
+import com.dsl.expressions.string.Right;
+import com.dsl.expressions.string.Split;
+import com.dsl.expressions.string.StringFunction;
+import com.dsl.expressions.string.Substring;
+import com.dsl.expressions.string.ToLower;
 import com.dsl.expressions.string.ToString;
+import com.dsl.expressions.string.ToUpper;
+import com.dsl.expressions.string.Trim;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -187,4 +199,57 @@ public class Query {
     public static Not not(String e) {
         return new Not(e);
     }
+
+    public static StringFunction trim(Object original) {
+        return new Trim(original);
+    }
+
+    public static StringFunction toUpper(Object original) {
+        return new ToUpper(original);
+    }
+
+    public static StringFunction toLower(Object o) {
+        return new ToLower(o);
+    }
+
+    public static StringFunction toString(Object original) {
+        return new ToString(original);
+    }
+
+    public static StringFunction substring(Object original, Object start, Object length) {
+        return new Substring(original, start, length);
+    }
+
+    public static StringFunction substring(Object original, Object start) {
+        return new Substring(original, start);
+    }
+
+    public static StringFunction split(Object original, Object splitDelimiter) {
+        return new Split(original,  splitDelimiter);
+    }
+
+    public static StringFunction rTrim(Object original) {
+        return new RTrim(original);
+    }
+
+    public static StringFunction lTrim(Object original) {
+        return new LTrim(original);
+    }
+
+    public static StringFunction right(Object original, Object length) {
+        return new Right(original, length);
+    }
+
+    public static StringFunction left(Object original, Object length) {
+        return new Left(original, length);
+    }
+
+    public static StringFunction reverse(Object original) {
+        return new Reverse(original);
+    }
+
+    public static StringFunction replace(Object original, Object search, Object replace) {
+        return new Replace(original, search, replace);
+    }
+
 }

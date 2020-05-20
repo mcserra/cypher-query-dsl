@@ -1,5 +1,6 @@
 package com.dsl.expressions;
 
+import com.dsl.Query;
 import com.dsl.expressions.path.VariablePath;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -211,5 +212,72 @@ public class QueryExpressionTest {
   void optionalMatchWithTest() {
     String s = with(literal("s").as("A")).optMatch(node("b")).asString();
     Assertions.assertEquals("WITH 's' AS A OPTIONAL MATCH (b)", s);
+  }
+
+  // String expressions
+
+  @Test
+  void trimTest() {
+    String s = trim(literal(" hello ")).asString();
+    Assertions.assertEquals("trim(' hello ')", s);
+  }
+
+  @Test
+  void leftTest() {
+    String s = left(literal("hello"), var("length")).asString();
+    Assertions.assertEquals("left('hello', $length)", s);
+  }
+
+  @Test
+  void rightTest() {
+    String s = right(literal("hello"), 2).asString();
+    Assertions.assertEquals("right('hello', 2)", s);
+  }
+
+  @Test
+  void lTrimTest() {
+    String s = lTrim(literal("  hello")).asString();
+    Assertions.assertEquals("lTrim('  hello')", s);
+  }
+
+  @Test
+  void rTrimTest() {
+    String s = rTrim(literal("  hello")).asString();
+    Assertions.assertEquals("rTrim('  hello')", s);
+  }
+
+  @Test
+  void replaceTest() {
+    String s = replace(literal("hello"), literal("l"), literal("w")).asString();
+    Assertions.assertEquals("replace('hello', 'l', 'w')", s);
+  }
+
+  @Test
+  void reverseTest() {
+    String s = reverse(literal("hello")).asString();
+    Assertions.assertEquals("reverse('hello')", s);
+  }
+
+  @Test
+  void splitTest() {
+    String s = split(literal("one,two"), literal(",")).asString();
+    Assertions.assertEquals("split('one,two', ',')", s);
+  }
+
+  @Test
+  void substringTest() {
+    Assertions.assertEquals("substring('hello', 1, 3)", substring(literal("hello"), 1, 3).asString());
+    Assertions.assertEquals("substring('hello', 1)", substring(literal("hello"), 1).asString());
+  }
+
+  @Test
+  void toLowerTest() {
+    Assertions.assertEquals("toLower('HELLO')", toLower(literal("HELLO")).asString());
+    Assertions.assertEquals("toUpper('hello')", toUpper(literal("hello")).asString());
+  }
+
+  @Test
+  void toStringTest() {
+    Assertions.assertEquals("toString(a)", Query.toString("a").asString());
   }
 }
