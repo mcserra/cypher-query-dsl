@@ -97,14 +97,14 @@ class ClauseBuilderTest {
             match()
                 .path(node("person:Person"))
                 .path(node("peter:Person"))
-            .where(not(node("person").right().node("peter")))
-            .returns("person.name", "person.age")
-            .asString();
+                .where(not(node("person").right().node("peter")))
+                .returns("person.name", "person.age")
+                .asString();
 
         Assertions.assertEquals(
             "MATCH (person:Person), (peter:Person)" +
-            " WHERE NOT ((person)-->(peter))" +
-            " RETURN person.name, person.age", query);
+                " WHERE NOT ((person)-->(peter))" +
+                " RETURN person.name, person.age", query);
     }
 
     @Test
@@ -370,7 +370,7 @@ class ClauseBuilderTest {
             merge()
                 .path("(s:Person {name: 'Foo'})")
                 .path(node("name:Name").props("name", "'Bar'"))
-            .merge()
+                .merge()
                 .path(node("name1:Name").props("name", "'Carson'"))
                 .asString();
         Assertions.assertEquals("" +
@@ -484,14 +484,36 @@ class ClauseBuilderTest {
     void testUpdateProperty() {
         String s = match().path(node("n").props("name", literal("Andy")))
             .set()
-                .prop(select("n.age")).setEq(asString(1))
-                .prop("n.age").setEq(asString(select("n.age")))
+            .prop(select("n.age")).setEq(asString(1))
+            .prop("n.age").setEq(asString(select("n.age")))
             .returns("n.name", "n.age")
             .asString();
 
         Assertions.assertEquals("MATCH (n {name: 'Andy'})" +
             " SET n.age = toString(1), n.age = toString(n.age)" +
             " RETURN n.name, n.age", s);
+    }
+
+    @Test
+    void testSetWithCase() {
+        String s = match().path(node("n").props("name", literal("Andy")))
+            .set()
+            .prop(select(
+                caze()
+                    .when(select("n.age").eq(36))
+                    .then(select("n"))
+                    .end()
+                ).prop("worksIn")
+            ).setEq(literal("Malmo"))
+            .returns("n.name", "n.worksIn")
+            .asString();
+
+        Assertions.assertEquals("MATCH (n {name: 'Andy'})" +
+            " SET (" +
+            "CASE" +
+            " WHEN n.age = 36" +
+            " THEN n END).worksIn = 'Malmo'" +
+            " RETURN n.name, n.worksIn", s);
     }
 
     @Test

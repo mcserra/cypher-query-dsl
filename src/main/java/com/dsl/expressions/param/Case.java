@@ -7,13 +7,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Case implements Expression, AfterCaseWhen, AfterCaseThen, AfterCase {
+public class Case implements Expression, AfterCaseWhen, AfterCaseThen, AfterCase, SelectorExpression {
     private final List<WhenThen> whenThen;
     private Expression elseCondition;
 
     public Case() {
         this.whenThen = new ArrayList<>();
         this.elseCondition = null;
+    }
+
+    @Override
+    public Case end() {
+        return this;
     }
 
     @Override
@@ -58,11 +63,17 @@ public class Case implements Expression, AfterCaseWhen, AfterCaseThen, AfterCase
 
     @Override
     public String asString() {
-        return String.format("CASE %s ELSE %s END", whenThenAsString(), elseCondition.asString());
+        String elseString = elseCondition == null ? "" : String.format(" ELSE %s", elseCondition.asString());
+        return String.format("CASE %s%s END", whenThenAsString(), elseString);
     }
 
     private String whenThenAsString() {
         return whenThen.stream().map(WhenThen::asString).collect(Collectors.joining(" "));
+    }
+
+    @Override
+    public FinalExpression as(String selector) {
+        return this;
     }
 
     private static class WhenThen implements AsString {
