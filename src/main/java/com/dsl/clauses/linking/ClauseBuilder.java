@@ -5,6 +5,7 @@ import com.dsl.StringUtils;
 import com.dsl.clauses.Alias;
 import com.dsl.clauses.Clause;
 import com.dsl.clauses.CreateClause;
+import com.dsl.clauses.DeleteClause;
 import com.dsl.clauses.LimitClause;
 import com.dsl.clauses.MatchClause;
 import com.dsl.clauses.MergeClause;
@@ -33,7 +34,7 @@ import java.util.List;
 
 public class ClauseBuilder
     implements AsString, AfterWith, AfterWhere, AfterReturns, AfterLimit, AfterSkip, AfterOrderBy,
-    Unwind, AfterUnwind, AfterSet, SetEquals, Set, SetProp, WithSelect {
+    Unwind, AfterUnwind, AfterSet, SetEquals, Set, SetProp, WithSelect, Delete, AfterDelete {
 
     private final List<Clause> clauses = new ArrayList<>();
     private AfterCreateImpl afterCreateImpl;
@@ -312,7 +313,6 @@ public class ClauseBuilder
 
     @Override
     public SetEquals prop(String o) {
-
         getLast(SetClause.class).addClause(new Selector(o));
         return this;
     }
@@ -320,6 +320,24 @@ public class ClauseBuilder
     @Override
     public SetEquals prop(Selector o) {
         getLast(SetClause.class).addClause(o);
+        return this;
+    }
+
+    @Override
+    public AfterDelete delete(Selector selector) {
+        this.clauses.add(new DeleteClause(selector));
+        return this;
+    }
+
+    @Override
+    public AfterDelete delete(String s) {
+        this.clauses.add(new DeleteClause(s));
+        return this;
+    }
+
+    @Override
+    public AsString detach() {
+        getLast(DeleteClause.class).setDetach();
         return this;
     }
 
