@@ -14,6 +14,10 @@ public class Selector extends ParamExpression
         super(new PropertyExpression(selector));
     }
 
+    public Selector(SelectorExpression selectorExpression) {
+        super(new PropertyExpression(selectorExpression));
+    }
+
     public Property prop(String property) {
         return new Property(new Selector(property), this);
     }
@@ -27,6 +31,10 @@ public class Selector extends ParamExpression
 
         public PropertyExpression(String s) {
             super(new StringExpressionImpl(s));
+        }
+
+        public PropertyExpression(SelectorExpression s) {
+            super(new StringExpressionImpl(String.format("(%s)", s.asString())));
         }
 
         private static class StringExpressionImpl extends AbstractBooleanExpression implements AsString {

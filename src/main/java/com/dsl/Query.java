@@ -1,20 +1,20 @@
 package com.dsl;
 
-import com.dsl.clauses.CreateClause;
-import com.dsl.clauses.MatchClause;
-import com.dsl.clauses.MergeClause;
-import com.dsl.clauses.UnwindClause;
-import com.dsl.clauses.WithClause;
-import com.dsl.clauses.linking.AfterCreate;
-import com.dsl.clauses.linking.AfterMatch;
-import com.dsl.clauses.linking.AfterMerge;
-import com.dsl.clauses.linking.AfterWith;
-import com.dsl.clauses.linking.ClauseBuilder;
-import com.dsl.clauses.linking.CreatePath;
-import com.dsl.clauses.linking.MatchPath;
-import com.dsl.clauses.linking.MergePath;
-import com.dsl.clauses.linking.UnwindAlias;
-import com.dsl.clauses.linking.WithSelect;
+import com.dsl.clauses.ClauseBuilder;
+import com.dsl.clauses.creates.CreateClause;
+import com.dsl.clauses.creates.AfterCreate;
+import com.dsl.clauses.creates.CreatePath;
+import com.dsl.clauses.match.AfterMatchGeneral;
+import com.dsl.clauses.match.MatchClause;
+import com.dsl.clauses.match.MatchPath;
+import com.dsl.clauses.merge.AfterMerge;
+import com.dsl.clauses.merge.MergeClause;
+import com.dsl.clauses.merge.MergePath;
+import com.dsl.clauses.unwind.UnwindAlias;
+import com.dsl.clauses.unwind.UnwindClause;
+import com.dsl.clauses.with.AfterWith;
+import com.dsl.clauses.with.WithClause;
+import com.dsl.clauses.with.WithSelect;
 import com.dsl.expressions.aggregating.Average;
 import com.dsl.expressions.aggregating.Collect;
 import com.dsl.expressions.aggregating.Count;
@@ -78,11 +78,11 @@ public class Query {
         return new ClauseBuilder(new WithClause());
     }
 
-    public static AfterMatch match(PathExpression... pathExpression) {
+    public static AfterMatchGeneral match(PathExpression... pathExpression) {
         return new ClauseBuilder().match(new MatchClause(pathExpression));
     }
 
-    public static AfterMatch optMatch(final PathExpression... pathExpression) {
+    public static AfterMatchGeneral optMatch(final PathExpression... pathExpression) {
         return new ClauseBuilder().match(MatchClause.optMatch(pathExpression));
     }
 
@@ -172,6 +172,10 @@ public class Query {
 
     public static Selector select(String alias) {
         return new Selector(alias);
+    }
+
+    public static Selector select(SelectorExpression selectorExpression) {
+        return new Selector(selectorExpression);
     }
 
     public static Json json(Object... literal) {
