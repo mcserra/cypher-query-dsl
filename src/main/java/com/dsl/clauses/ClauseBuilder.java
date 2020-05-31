@@ -171,60 +171,6 @@ public class ClauseBuilder
         return this;
     }
 
-    //@Override
-    //public AfterWhere where(final LogicalExpression logicalExpression) {
-    //    clauses.add(new WhereClause(logicalExpression));
-    //    return this;
-    //}
-//
-    //@Override
-    //public AfterWhere where(final String expression) {
-    //    clauses.add(new WhereClause(expression));
-    //    return this;
-    //}
-//
-    //@Override
-    //public AfterWhere where(final PathExpression pathExpression) {
-    //    clauses.add(new WhereClause(pathExpression));
-    //    return this;
-    //}
-
-    //@Override
-    //public AfterWhere and(String expression) {
-    //    getLast(WhereClause.class).addExpression(new Selector(expression), LogicalOperator.AND);
-    //    return this;
-    //}
-//
-    //@Override
-    //public AfterWhere and(LogicalExpression expression) {
-    //    getLast(WhereClause.class).addExpression(expression, LogicalOperator.AND);
-    //    return this;
-    //}
-//
-    //@Override
-    //public AfterWhere or(String expression) {
-    //    getLast(WhereClause.class).addExpression(new Selector(expression), LogicalOperator.OR);
-    //    return this;
-    //}
-//
-    //@Override
-    //public AfterWhere or(LogicalExpression expression) {
-    //    getLast(WhereClause.class).addExpression(expression, LogicalOperator.OR);
-    //    return this;
-    //}
-//
-    //@Override
-    //public AfterWhere xor(String expression) {
-    //    getLast(WhereClause.class).addExpression(new Selector(expression), LogicalOperator.XOR);
-    //    return this;
-    //}
-//
-    //@Override
-    //public AfterWhere xor(LogicalExpression expression) {
-    //    getLast(WhereClause.class).addExpression(expression, LogicalOperator.XOR);
-    //    return this;
-    //}
-
     @Override
     public ReturnAlias returns(Expression... e) {
         clauses.add(new ReturnClause(e));

@@ -22,14 +22,11 @@ import com.dsl.clauses.skip.AfterSkip;
 import com.dsl.clauses.skip.Skip;
 import com.dsl.clauses.unwind.Unwind;
 import com.dsl.clauses.unwind.UnwindAlias;
-import com.dsl.clauses.where.AfterWhere;
-import com.dsl.clauses.where.Where;
 import com.dsl.clauses.with.AfterWith;
 import com.dsl.clauses.with.With;
 import com.dsl.clauses.with.WithAlias;
 import com.dsl.clauses.with.WithSelect;
 import com.dsl.expressions.Expression;
-import com.dsl.expressions.logical.LogicalExpression;
 import com.dsl.expressions.param.FinalExpression;
 import com.dsl.expressions.param.Property;
 import com.dsl.expressions.param.Selector;
@@ -73,18 +70,6 @@ public interface ClauseImpl
     default WithSelect with() {
         return clauseBuilder().with();
     }
-
-    //default AfterWhere where(final LogicalExpression logicalExpression) {
-    //    return clauseBuilder().where(logicalExpression);
-    //}
-//
-    //default AfterWhere where(final String expression) {
-    //    return clauseBuilder().where(expression);
-    //}
-//
-    //default AfterWhere where(final PathExpression pathExpression) {
-    //    return clauseBuilder().where(pathExpression);
-    //}
 
     default ReturnAlias returns(Expression... e) {
         return clauseBuilder().returns(e);
