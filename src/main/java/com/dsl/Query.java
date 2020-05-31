@@ -27,6 +27,8 @@ import com.dsl.expressions.aggregating.StdDevP;
 import com.dsl.expressions.aggregating.Sum;
 import com.dsl.expressions.logical.LogicalExpression;
 import com.dsl.expressions.logical.Not;
+import com.dsl.expressions.param.AfterCase;
+import com.dsl.expressions.param.Case;
 import com.dsl.expressions.param.Date;
 import com.dsl.expressions.param.FinalExpression;
 import com.dsl.expressions.param.Json;
@@ -250,6 +252,10 @@ public class Query {
 
     public static StringFunction replace(Object original, Object search, Object replace) {
         return new Replace(original, search, replace);
+    }
+
+    public static AfterCase caze() {
+        return new Case();
     }
 
 }
