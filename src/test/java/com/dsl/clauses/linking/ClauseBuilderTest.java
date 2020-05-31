@@ -22,6 +22,26 @@ class ClauseBuilderTest {
     }
 
     @Test
+    void delete() {
+        String query = match()
+            .path(node("p:Person"))
+            .delete(select("p"))
+            .asString();
+
+        Assertions.assertEquals("MATCH (p:Person) DELETE p", query);
+    }
+
+    @Test
+    void deleteDetach() {
+        String query = match()
+            .path(node("p:Person"))
+            .delete("p").detach()
+            .asString();
+
+        Assertions.assertEquals("MATCH (p:Person) DETACH DELETE p", query);
+    }
+
+    @Test
     void optMatchStart() {
         String query = optMatch()
             .path(node("n:Name"))

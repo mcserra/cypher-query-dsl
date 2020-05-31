@@ -10,6 +10,10 @@ public final class StringUtils {
     private StringUtils() {
     }
 
+    public static String getString(final Object o) {
+        return o instanceof AsString ? ((AsString) o).asString() : o.toString();
+    }
+
     public static String join(final Object[] t) {
         return String.join(", ", StringUtils.asString(t));
     }

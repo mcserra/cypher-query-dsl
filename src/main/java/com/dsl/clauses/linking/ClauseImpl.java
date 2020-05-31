@@ -1,15 +1,18 @@
 package com.dsl.clauses.linking;
 
+import com.dsl.AsString;
 import com.dsl.expressions.Expression;
 import com.dsl.expressions.logical.LogicalExpression;
 import com.dsl.expressions.param.FinalExpression;
 import com.dsl.expressions.param.Property;
+import com.dsl.expressions.param.Selector;
 import com.dsl.expressions.param.Variable;
 import com.dsl.expressions.path.PathExpression;
 
 import java.util.Collection;
 
-public interface ClauseImpl extends Create, Merge, Match, Returns, Where, With, Limit, Skip, OrderBy, Unwind, AfterWith, WithSelect {
+public interface ClauseImpl
+    extends Create, Merge, Match, Returns, Where, With, Limit, Skip, OrderBy, Unwind, AfterWith, WithSelect, Delete {
 
     ClauseBuilder clauseBuilder();
 
@@ -122,6 +125,14 @@ public interface ClauseImpl extends Create, Merge, Match, Returns, Where, With, 
 
     default WithAlias select(String expression) {
         return clauseBuilder().select(expression);
+    }
+
+    default AfterDelete delete(final Selector selector) {
+        return clauseBuilder().delete(selector);
+    }
+
+    default AfterDelete delete(final String s) {
+        return clauseBuilder().delete(s);
     }
 
     @Override
