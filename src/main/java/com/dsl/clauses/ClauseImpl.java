@@ -13,8 +13,6 @@ import com.dsl.clauses.match.MatchPath;
 import com.dsl.clauses.merge.AfterMerge;
 import com.dsl.clauses.merge.Merge;
 import com.dsl.clauses.merge.MergePath;
-import com.dsl.clauses.order.AfterOrderBy;
-import com.dsl.clauses.order.OrderBy;
 import com.dsl.clauses.returns.ReturnAlias;
 import com.dsl.clauses.returns.Returns;
 import com.dsl.clauses.set.SetProp;
@@ -22,13 +20,12 @@ import com.dsl.clauses.skip.AfterSkip;
 import com.dsl.clauses.skip.Skip;
 import com.dsl.clauses.unwind.Unwind;
 import com.dsl.clauses.unwind.UnwindAlias;
-import com.dsl.clauses.with.AfterWith;
+import com.dsl.clauses.with.AfterWithSelect;
 import com.dsl.clauses.with.With;
-import com.dsl.clauses.with.WithAlias;
+import com.dsl.clauses.with.WithSelectAlias;
 import com.dsl.clauses.with.WithSelect;
 import com.dsl.expressions.Expression;
 import com.dsl.expressions.param.FinalExpression;
-import com.dsl.expressions.param.Property;
 import com.dsl.expressions.param.Selector;
 import com.dsl.expressions.param.Variable;
 import com.dsl.expressions.path.PathExpression;
@@ -36,7 +33,7 @@ import com.dsl.expressions.path.PathExpression;
 import java.util.Collection;
 
 public interface ClauseImpl
-    extends Create, Merge, Match, Returns, With, Limit, Skip, OrderBy, Unwind, AfterWith, WithSelect, Delete {
+    extends Create, Merge, Match, Returns, With, Limit, Skip, Unwind, AfterWithSelect, WithSelect, Delete {
 
     ClauseBuilder clauseBuilder();
 
@@ -103,14 +100,6 @@ public interface ClauseImpl
         return clauseBuilder().limit(expression);
     }
 
-    default AfterOrderBy orderBy(String... properties) {
-        return clauseBuilder().orderBy(properties);
-    }
-
-    default AfterOrderBy orderBy(Property... properties) {
-        return clauseBuilder().orderBy(properties);
-    }
-
     default AfterSkip skip(int numElements) {
         return clauseBuilder().skip(numElements);
     }
@@ -131,11 +120,11 @@ public interface ClauseImpl
         return clauseBuilder().unwind(var);
     }
 
-    default WithAlias select(final FinalExpression finalExpression) {
+    default WithSelectAlias select(final FinalExpression finalExpression) {
         return clauseBuilder().select(finalExpression);
     }
 
-    default WithAlias select(String expression) {
+    default WithSelectAlias select(String expression) {
         return clauseBuilder().select(expression);
     }
 

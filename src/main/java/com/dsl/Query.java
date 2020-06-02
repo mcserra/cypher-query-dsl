@@ -12,7 +12,7 @@ import com.dsl.clauses.merge.MergeClause;
 import com.dsl.clauses.merge.MergePath;
 import com.dsl.clauses.unwind.UnwindAlias;
 import com.dsl.clauses.unwind.UnwindClause;
-import com.dsl.clauses.with.AfterWith;
+import com.dsl.clauses.with.AfterWithSelect;
 import com.dsl.clauses.with.WithClause;
 import com.dsl.clauses.with.WithSelect;
 import com.dsl.expressions.aggregating.Average;
@@ -70,7 +70,7 @@ public class Query {
         return new ClauseBuilder().unwind((UnwindClause.varUnwind(var)));
     }
 
-    public static AfterWith with(FinalExpression... finalExpression) {
+    public static AfterWithSelect with(FinalExpression... finalExpression) {
         return new ClauseBuilder(new WithClause(finalExpression));
     }
 

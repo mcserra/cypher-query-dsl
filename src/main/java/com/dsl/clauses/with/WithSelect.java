@@ -2,7 +2,10 @@ package com.dsl.clauses.with;
 
 import com.dsl.expressions.param.FinalExpression;
 
+/**
+ * After with() which can only be proceeded by a select(..).
+ */
 public interface WithSelect {
-    WithAlias select(FinalExpression expression);
-    WithAlias select(String expression);
+    WithSelectAlias select(FinalExpression expression);
+    WithSelectAlias select(String expression);
 }

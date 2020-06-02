@@ -17,9 +17,12 @@ import com.dsl.clauses.match.MatchPath;
 import com.dsl.clauses.merge.AfterMerge;
 import com.dsl.clauses.merge.MergeClause;
 import com.dsl.clauses.merge.MergePath;
-import com.dsl.clauses.order.AfterOrderBy;
+import com.dsl.clauses.order.AfterOrderByOrder;
+import com.dsl.clauses.order.OrderBy;
 import com.dsl.clauses.order.OrderByClause;
+import com.dsl.clauses.order.OrderByDirection;
 import com.dsl.clauses.returns.AfterReturns;
+import com.dsl.clauses.returns.AfterReturnsOrderBy;
 import com.dsl.clauses.returns.ReturnAlias;
 import com.dsl.clauses.returns.ReturnClause;
 import com.dsl.clauses.set.AfterSet;
@@ -37,9 +40,11 @@ import com.dsl.clauses.where.AfterWhere;
 import com.dsl.clauses.where.Where;
 import com.dsl.clauses.where.WhereClause;
 import com.dsl.clauses.with.AfterWith;
-import com.dsl.clauses.with.WithAlias;
+import com.dsl.clauses.with.AfterWithOrderBy;
+import com.dsl.clauses.with.AfterWithSelect;
 import com.dsl.clauses.with.WithClause;
 import com.dsl.clauses.with.WithSelect;
+import com.dsl.clauses.with.WithSelectAlias;
 import com.dsl.expressions.Expression;
 import com.dsl.expressions.bool.EqualityExpression;
 import com.dsl.expressions.logical.LogicalExpression;
@@ -57,15 +62,15 @@ import java.util.Collection;
 import java.util.List;
 
 public class ClauseBuilder
-    implements AsString, AfterWith, AfterReturns, AfterLimit, AfterSkip, AfterOrderBy,
+    implements AsString, AfterWithSelect, AfterLimit, AfterSkip,
     Unwind, AfterUnwind, AfterSet, SetEquals, Set, SetProp, WithSelect, Delete, AfterDelete {
 
     private final List<Clause> clauses = new ArrayList<>();
-    private AfterCreateImpl afterCreateImpl;
-    private AfterMatchImpl afterMatchImpl;
-    private AfterMergeImpl afterMergeImpl;
+    private AfterCreateImplSelect afterCreateImpl;
+    private AfterMatchImplSelect afterMatchImpl;
+    private AfterMergeImplSelect afterMergeImpl;
     private UnwindAliasImpl unwindAlias;
-    private WithAliasImpl withAlias;
+    private WithSelectAliasImpl withAlias;
     private ReturnAliasImpl returnAlias;
 
     public ClauseBuilder(final Clause clause) {
@@ -80,27 +85,27 @@ public class ClauseBuilder
         return unwindAlias;
     }
 
-    public AfterMatchImpl match(final MatchClause clause) {
+    public AfterMatchImplSelect match(final MatchClause clause) {
         init(clause);
         return afterMatchImpl;
     }
 
-    public AfterMergeImpl merge(final MergeClause clause) {
+    public AfterMergeImplSelect merge(final MergeClause clause) {
         init(clause);
         return afterMergeImpl;
     }
 
-    public AfterCreateImpl create(final CreateClause clause) {
+    public AfterCreateImplSelect create(final CreateClause clause) {
         init(clause);
         return afterCreateImpl;
     }
 
     private void init(final Clause clause) {
-        afterCreateImpl = new AfterCreateImpl().init(this);
-        afterMatchImpl = new AfterMatchImpl().init(this);
-        afterMergeImpl = new AfterMergeImpl().init(this);
+        afterCreateImpl = new AfterCreateImplSelect().init(this);
+        afterMatchImpl = new AfterMatchImplSelect().init(this);
+        afterMergeImpl = new AfterMergeImplSelect().init(this);
         unwindAlias = new UnwindAliasImpl().init(this);
-        withAlias = new WithAliasImpl().init(this);
+        withAlias = new WithSelectAliasImpl().init(this);
         returnAlias = new ReturnAliasImpl().init(this);
         clauses.add(clause);
     }
@@ -130,13 +135,13 @@ public class ClauseBuilder
     }
 
     @Override
-    public WithAlias select(final FinalExpression finalExpression) {
+    public WithSelectAlias select(final FinalExpression finalExpression) {
         getLast(WithClause.class).addExpression(finalExpression);
         return withAlias;
     }
 
     @Override
-    public WithAlias select(String expression) {
+    public WithSelectAlias select(String expression) {
         getLast(WithClause.class).addExpression(new Selector(expression));
         return withAlias;
     }
@@ -218,18 +223,6 @@ public class ClauseBuilder
     @Override
     public AfterLimit limit(Expression expression) {
         clauses.add(new LimitClause(expression));
-        return this;
-    }
-
-    @Override
-    public AfterOrderBy orderBy(String... properties) {
-        clauses.add(new OrderByClause(properties));
-        return this;
-    }
-
-    @Override
-    public AfterOrderBy orderBy(Property... properties) {
-        clauses.add(new OrderByClause(properties));
         return this;
     }
 
@@ -346,7 +339,15 @@ public class ClauseBuilder
     }
 
     private static class ReturnAliasImpl extends AliasExpressionResolver<AfterReturns, ReturnClause>
-        implements ClauseImpl, ReturnAlias {
+        implements ClauseImpl, ReturnAlias, SortableClause<AfterReturnsOrderBy, AfterReturns>, AfterReturnsOrderBy {
+        @Override
+        public AfterReturnsOrderBy getClause() {
+            return this;
+        }
+
+        public ClauseBuilder getClauseBuilder() {
+            return clauseBuilder;
+        }
 
         private ReturnAliasImpl init(ClauseBuilder clauseBuilder) {
             start(this, ReturnClause.class, clauseBuilder);
@@ -354,9 +355,19 @@ public class ClauseBuilder
         }
     }
 
-    private static class WithAliasImpl extends AliasExpressionResolver<AfterWith, WithClause> implements ClauseImpl, WithAlias {
+    private static class WithSelectAliasImpl extends AliasExpressionResolver<AfterWithSelect, WithClause>
+        implements ClauseImpl, WithSelectAlias, SortableClause<AfterWithOrderBy, AfterWith>, AfterWithOrderBy {
+        @Override
+        public AfterWithOrderBy getClause() {
+            return this;
+        }
 
-        private WithAliasImpl init(ClauseBuilder clauseBuilder) {
+        public ClauseBuilder getClauseBuilder() {
+            return clauseBuilder;
+        }
+
+
+        private WithSelectAliasImpl init(ClauseBuilder clauseBuilder) {
             start(this, WithClause.class, clauseBuilder);
             return this;
         }
@@ -371,10 +382,10 @@ public class ClauseBuilder
         }
     }
 
-    private static class AfterCreateImpl
+    private static class AfterCreateImplSelect
         extends PathExpressionAppender<AfterCreate, CreateClause> implements ClauseImpl, AfterCreate, CreatePath {
 
-        private AfterCreateImpl init(ClauseBuilder clauseBuilder) {
+        private AfterCreateImplSelect init(ClauseBuilder clauseBuilder) {
             start(this, CreateClause.class, clauseBuilder);
             return this;
         }
@@ -392,7 +403,7 @@ public class ClauseBuilder
         }
     }
 
-    private static class AfterMatchImpl
+    private static class AfterMatchImplSelect
         extends PathExpressionAppender<AfterMatchGeneral, MatchClause>
         implements AfterMatchGeneral, ClauseImpl, MatchPath, AfterMatchWhere, FilterableClause<AfterMatchWhere> {
 
@@ -401,9 +412,38 @@ public class ClauseBuilder
             return this;
         }
 
-        private AfterMatchImpl init(ClauseBuilder clauseBuilder) {
+        private AfterMatchImplSelect init(ClauseBuilder clauseBuilder) {
             start(this, MatchClause.class, clauseBuilder);
             return this;
+        }
+    }
+
+    private interface SortableClause<T extends U, U> extends OrderBy<T>, AfterOrderByOrder<U> {
+        ClauseBuilder getClauseBuilder();
+        T getClause();
+
+        @Override
+        default T orderBy(String... properties) {
+            getClauseBuilder().clauses.add(new OrderByClause(properties));
+            return getClause();
+        }
+
+        @Override
+        default T orderBy(Property... properties) {
+            getClauseBuilder().clauses.add(new OrderByClause(properties));
+            return getClause();
+        }
+
+        @Override
+        default T asc() {
+            getClauseBuilder().getLast(OrderByClause.class).setOrderByDirection(OrderByDirection.ASC);
+            return getClause();
+        }
+
+        @Override
+        default T desc() {
+            getClauseBuilder().getLast(OrderByClause.class).setOrderByDirection(OrderByDirection.DESC);
+            return getClause();
         }
     }
 
@@ -460,10 +500,10 @@ public class ClauseBuilder
         }
     }
 
-    private static class AfterMergeImpl
+    private static class AfterMergeImplSelect
         extends PathExpressionAppender<AfterMerge, MergeClause> implements AfterMerge, ClauseImpl, MergePath {
 
-        private AfterMergeImpl init(ClauseBuilder clauseBuilder) {
+        private AfterMergeImplSelect init(ClauseBuilder clauseBuilder) {
             start(this, MergeClause.class, clauseBuilder);
             return this;
         }
