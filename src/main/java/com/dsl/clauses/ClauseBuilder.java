@@ -17,7 +17,8 @@ import com.dsl.clauses.match.MatchPath;
 import com.dsl.clauses.merge.AfterMerge;
 import com.dsl.clauses.merge.MergeClause;
 import com.dsl.clauses.merge.MergePath;
-import com.dsl.clauses.order.AfterOrderByOrder;
+import com.dsl.clauses.order.AfterOrderBy;
+import com.dsl.clauses.order.AfterOrderByNoProp;
 import com.dsl.clauses.order.OrderBy;
 import com.dsl.clauses.order.OrderByClause;
 import com.dsl.clauses.order.OrderByDirection;
@@ -356,7 +357,9 @@ public class ClauseBuilder
     }
 
     private static class WithSelectAliasImpl extends AliasExpressionResolver<AfterWithSelect, WithClause>
-        implements ClauseImpl, WithSelectAlias, SortableClause<AfterWithOrderBy, AfterWith>, AfterWithOrderBy {
+        implements ClauseImpl, WithSelectAlias,
+        SortableClause<AfterWithOrderBy, AfterWith>,
+        AfterWithOrderBy {
         @Override
         public AfterWithOrderBy getClause() {
             return this;
@@ -365,7 +368,6 @@ public class ClauseBuilder
         public ClauseBuilder getClauseBuilder() {
             return clauseBuilder;
         }
-
 
         private WithSelectAliasImpl init(ClauseBuilder clauseBuilder) {
             start(this, WithClause.class, clauseBuilder);
@@ -418,8 +420,9 @@ public class ClauseBuilder
         }
     }
 
-    private interface SortableClause<T extends U, U> extends OrderBy<T>, AfterOrderByOrder<U> {
+    private interface SortableClause<T extends U, U> extends OrderBy<T>, AfterOrderByNoProp<T>, AfterOrderBy<T> {
         ClauseBuilder getClauseBuilder();
+
         T getClause();
 
         @Override
@@ -431,6 +434,24 @@ public class ClauseBuilder
         @Override
         default T orderBy(Property... properties) {
             getClauseBuilder().clauses.add(new OrderByClause(properties));
+            return getClause();
+        }
+
+        @Override
+        default AfterOrderByNoProp<T> orderBy() {
+            getClauseBuilder().clauses.add(new OrderByClause());
+            return this;
+        }
+
+        @Override
+        default T prop(String s) {
+            getClauseBuilder().getLast(OrderByClause.class).addProperty(s);
+            return getClause();
+        }
+
+        @Override
+        default T prop(Property p) {
+            getClauseBuilder().getLast(OrderByClause.class).addProperty(p);
             return getClause();
         }
 
@@ -449,6 +470,7 @@ public class ClauseBuilder
 
     private interface FilterableClause<T> extends AfterWhere<T>, Where<T> {
         ClauseBuilder getClauseBuilder();
+
         T getClause();
 
         @Override
