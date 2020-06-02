@@ -70,10 +70,6 @@ public class Query {
         return new ClauseBuilder().unwind((UnwindClause.varUnwind(var)));
     }
 
-    public static AfterWithSelect with(FinalExpression... finalExpression) {
-        return new ClauseBuilder(new WithClause(finalExpression));
-    }
-
     public static WithSelect with() {
         return new ClauseBuilder(new WithClause());
     }

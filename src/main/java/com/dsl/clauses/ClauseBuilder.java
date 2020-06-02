@@ -8,10 +8,11 @@ import com.dsl.clauses.creates.CreatePath;
 import com.dsl.clauses.delete.AfterDelete;
 import com.dsl.clauses.delete.Delete;
 import com.dsl.clauses.delete.DeleteClause;
-import com.dsl.clauses.limit.AfterLimit;
+import com.dsl.clauses.limit.Limit;
 import com.dsl.clauses.limit.LimitClause;
 import com.dsl.clauses.match.AfterMatchGeneral;
 import com.dsl.clauses.match.AfterMatchWhere;
+import com.dsl.clauses.match.Match;
 import com.dsl.clauses.match.MatchClause;
 import com.dsl.clauses.match.MatchPath;
 import com.dsl.clauses.merge.AfterMerge;
@@ -24,14 +25,16 @@ import com.dsl.clauses.order.OrderByClause;
 import com.dsl.clauses.order.OrderByDirection;
 import com.dsl.clauses.returns.AfterReturns;
 import com.dsl.clauses.returns.AfterReturnsOrderBy;
+import com.dsl.clauses.returns.AfterReturnsSkip;
 import com.dsl.clauses.returns.ReturnAlias;
 import com.dsl.clauses.returns.ReturnClause;
+import com.dsl.clauses.returns.Returns;
 import com.dsl.clauses.set.AfterSet;
 import com.dsl.clauses.set.Set;
 import com.dsl.clauses.set.SetClause;
 import com.dsl.clauses.set.SetEquals;
 import com.dsl.clauses.set.SetProp;
-import com.dsl.clauses.skip.AfterSkip;
+import com.dsl.clauses.skip.Skip;
 import com.dsl.clauses.skip.SkipClause;
 import com.dsl.clauses.unwind.AfterUnwind;
 import com.dsl.clauses.unwind.Unwind;
@@ -43,6 +46,8 @@ import com.dsl.clauses.where.WhereClause;
 import com.dsl.clauses.with.AfterWith;
 import com.dsl.clauses.with.AfterWithOrderBy;
 import com.dsl.clauses.with.AfterWithSelect;
+import com.dsl.clauses.with.AfterWithSkip;
+import com.dsl.clauses.with.With;
 import com.dsl.clauses.with.WithClause;
 import com.dsl.clauses.with.WithSelect;
 import com.dsl.clauses.with.WithSelectAlias;
@@ -63,8 +68,8 @@ import java.util.Collection;
 import java.util.List;
 
 public class ClauseBuilder
-    implements AsString, AfterWithSelect, AfterLimit, AfterSkip,
-    Unwind, AfterUnwind, AfterSet, SetEquals, Set, SetProp, WithSelect, Delete, AfterDelete {
+    implements AsString,
+    Unwind, AfterUnwind, AfterSet, SetEquals, Set, SetProp, WithSelect, Delete, AfterDelete, Returns, Match, With {
 
     private final List<Clause> clauses = new ArrayList<>();
     private AfterCreateImplSelect afterCreateImpl;
@@ -210,42 +215,6 @@ public class ClauseBuilder
     }
 
     @Override
-    public AfterLimit limit(int numElements) {
-        clauses.add(new LimitClause(numElements));
-        return this;
-    }
-
-    @Override
-    public AfterLimit limit(Variable variable) {
-        clauses.add(new LimitClause(variable));
-        return this;
-    }
-
-    @Override
-    public AfterLimit limit(Expression expression) {
-        clauses.add(new LimitClause(expression));
-        return this;
-    }
-
-    @Override
-    public AfterSkip skip(int numElements) {
-        clauses.add(new SkipClause(numElements));
-        return this;
-    }
-
-    @Override
-    public AfterSkip skip(Variable variable) {
-        clauses.add(new SkipClause(variable));
-        return this;
-    }
-
-    @Override
-    public AfterSkip skip(Expression expression) {
-        clauses.add(new SkipClause(expression));
-        return this;
-    }
-
-    @Override
     public UnwindAlias unwind(Collection<?> a) {
         clauses.add(UnwindClause.collectionUnwind(a));
         return unwindAlias;
@@ -340,9 +309,17 @@ public class ClauseBuilder
     }
 
     private static class ReturnAliasImpl extends AliasExpressionResolver<AfterReturns, ReturnClause>
-        implements ClauseImpl, ReturnAlias, SortableClause<AfterReturnsOrderBy, AfterReturns>, AfterReturnsOrderBy {
+        implements ClauseImpl, ReturnAlias, SortableClause<AfterReturnsOrderBy, AfterReturns>,
+        AfterReturnsOrderBy, LimitableClause<AsString, AfterReturnsSkip>, AfterReturnsSkip
+    {
+
         @Override
-        public AfterReturnsOrderBy getClause() {
+        public AfterReturnsOrderBy getSortableClause() {
+            return this;
+        }
+
+        @Override
+        public AfterReturnsSkip getClause() {
             return this;
         }
 
@@ -357,11 +334,16 @@ public class ClauseBuilder
     }
 
     private static class WithSelectAliasImpl extends AliasExpressionResolver<AfterWithSelect, WithClause>
-        implements ClauseImpl, WithSelectAlias,
-        SortableClause<AfterWithOrderBy, AfterWith>,
-        AfterWithOrderBy {
+        implements ClauseImpl, WithSelectAlias, SortableClause<AfterWithOrderBy, AfterWith>, AfterWithOrderBy,
+        AfterWithSelect, WithSelect, LimitableClause<AfterWith, AfterWithSkip>, AfterWithSkip
+    {
         @Override
-        public AfterWithOrderBy getClause() {
+        public AfterWithOrderBy getSortableClause() {
+            return this;
+        }
+
+        @Override
+        public AfterWithSkip getClause() {
             return this;
         }
 
@@ -372,6 +354,16 @@ public class ClauseBuilder
         private WithSelectAliasImpl init(ClauseBuilder clauseBuilder) {
             start(this, WithClause.class, clauseBuilder);
             return this;
+        }
+
+        @Override
+        public WithSelectAlias select(final FinalExpression finalExpression) {
+            return clauseBuilder().select(finalExpression);
+        }
+
+        @Override
+        public WithSelectAlias select(String expression) {
+            return clauseBuilder().select(expression);
         }
     }
 
@@ -420,21 +412,63 @@ public class ClauseBuilder
         }
     }
 
+    private interface LimitableClause<T, U extends T> extends Limit<T>, Skip<U> {
+        ClauseBuilder getClauseBuilder();
+
+        U getClause();
+
+        @Override
+        default T limit(int numElements) {
+            getClauseBuilder().clauses.add(new LimitClause(numElements));
+            return getClause();
+        }
+
+        @Override
+        default T limit(Variable variable) {
+            getClauseBuilder().clauses.add(new LimitClause(variable));
+            return getClause();
+        }
+
+        @Override
+        default T limit(Expression expression) {
+            getClauseBuilder().clauses.add(new LimitClause(expression));
+            return getClause();
+        }
+
+        @Override
+        default U skip(int numElements) {
+            getClauseBuilder().clauses.add(new SkipClause(numElements));
+            return getClause();
+        }
+
+        @Override
+        default U skip(Variable variable) {
+            getClauseBuilder().clauses.add(new SkipClause(variable));
+            return getClause();
+        }
+
+        @Override
+        default U skip(Expression expression) {
+            getClauseBuilder().clauses.add(new SkipClause(expression));
+            return getClause();
+        }
+    }
+
     private interface SortableClause<T extends U, U> extends OrderBy<T>, AfterOrderByNoProp<T>, AfterOrderBy<T> {
         ClauseBuilder getClauseBuilder();
 
-        T getClause();
+        T getSortableClause();
 
         @Override
         default T orderBy(String... properties) {
             getClauseBuilder().clauses.add(new OrderByClause(properties));
-            return getClause();
+            return getSortableClause();
         }
 
         @Override
         default T orderBy(Property... properties) {
             getClauseBuilder().clauses.add(new OrderByClause(properties));
-            return getClause();
+            return getSortableClause();
         }
 
         @Override
@@ -446,25 +480,25 @@ public class ClauseBuilder
         @Override
         default T prop(String s) {
             getClauseBuilder().getLast(OrderByClause.class).addProperty(s);
-            return getClause();
+            return getSortableClause();
         }
 
         @Override
         default T prop(Property p) {
             getClauseBuilder().getLast(OrderByClause.class).addProperty(p);
-            return getClause();
+            return getSortableClause();
         }
 
         @Override
         default T asc() {
             getClauseBuilder().getLast(OrderByClause.class).setOrderByDirection(OrderByDirection.ASC);
-            return getClause();
+            return getSortableClause();
         }
 
         @Override
         default T desc() {
             getClauseBuilder().getLast(OrderByClause.class).setOrderByDirection(OrderByDirection.DESC);
-            return getClause();
+            return getSortableClause();
         }
     }
 
