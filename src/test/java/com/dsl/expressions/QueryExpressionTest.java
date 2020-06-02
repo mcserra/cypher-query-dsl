@@ -73,7 +73,7 @@ public class QueryExpressionTest {
     //Var
     @Test
     void varTest() {
-        String s = with(var("a").as("s")).asString();
+        String s = with().select(var("a").as("s")).asString();
         Assertions.assertEquals("WITH $a AS s", s);
     }
 
@@ -117,13 +117,13 @@ public class QueryExpressionTest {
     //Aggregating expressions
     @Test
     void avgTest() {
-        String s = with(literal(1).as("dur")).returns(avg(select("dur"))).asString();
+        String s = with().select(literal(1).as("dur")).returns(avg(select("dur"))).asString();
         Assertions.assertEquals("WITH 1 AS dur RETURN avg(dur)", s);
     }
 
     @Test
     void countTest() {
-        String s = with(literal(1).as("dur")).returns(count(select("dur"))).asString();
+        String s = with().select(literal(1).as("dur")).returns(count(select("dur"))).asString();
         Assertions.assertEquals("WITH 1 AS dur RETURN count(dur)", s);
     }
 
@@ -145,13 +145,13 @@ public class QueryExpressionTest {
 
     @Test
     void minTest() {
-        String s = with(select("[1, 3]").as("x")).returns(min(select("x"))).asString();
+        String s = with().select(select("[1, 3]").as("x")).returns(min(select("x"))).asString();
         Assertions.assertEquals("WITH [1, 3] AS x RETURN min(x)", s);
     }
 
     @Test
     void maxTest() {
-        String s = with(select("[1, 3]").as("x")).returns(max(select("x"))).asString();
+        String s = with().select(select("[1, 3]").as("x")).returns(max(select("x"))).asString();
         Assertions.assertEquals("WITH [1, 3] AS x RETURN max(x)", s);
     }
 
@@ -211,7 +211,7 @@ public class QueryExpressionTest {
 
     @Test
     void optionalMatchWithTest() {
-        String s = with(literal("s").as("A")).optMatch(node("b")).asString();
+        String s = with().select(literal("s").as("A")).optMatch(node("b")).asString();
         Assertions.assertEquals("WITH 's' AS A OPTIONAL MATCH (b)", s);
     }
 

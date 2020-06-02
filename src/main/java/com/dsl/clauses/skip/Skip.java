@@ -3,11 +3,11 @@ package com.dsl.clauses.skip;
 import com.dsl.expressions.Expression;
 import com.dsl.expressions.param.Variable;
 
-public interface Skip {
+public interface Skip<T> {
 
-  AfterSkip skip(int numElements);
+  T skip(int numElements);
 
-  AfterSkip skip(Variable variable);
+  T skip(Variable variable);
 
-  AfterSkip skip(Expression expression);
+  T skip(Expression expression);
 }

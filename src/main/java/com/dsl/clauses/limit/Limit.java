@@ -3,10 +3,10 @@ package com.dsl.clauses.limit;
 import com.dsl.expressions.Expression;
 import com.dsl.expressions.param.Variable;
 
-public interface Limit {
-    AfterLimit limit(int numElements);
+public interface Limit<T> {
+    T limit(int numElements);
 
-    AfterLimit limit(Variable variable);
+    T limit(Variable variable);
 
-    AfterLimit limit(Expression expression);
+    T limit(Expression expression);
 }
