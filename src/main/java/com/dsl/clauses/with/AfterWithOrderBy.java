@@ -1,6 +1,6 @@
 package com.dsl.clauses.with;
 
-import com.dsl.clauses.order.AfterOrderByOrder;
+import com.dsl.clauses.order.AfterOrderBy;
 
-public interface AfterWithOrderBy extends AfterWith, AfterOrderByOrder<AfterWith> {
+public interface AfterWithOrderBy extends AfterWith, AfterOrderBy<AfterWithOrderBy> {
 }

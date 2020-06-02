@@ -216,12 +216,16 @@ class ClauseBuilderTest {
     void orderByTest() {
         String s = match()
             .path(node("n:Name").props("name", "'Fred'"))
+            .with().select("n")
+            .orderBy()
+            .prop(select("n").prop("age")).asc()
             .with()
             .select("n")
-            .orderBy("n.name")
-            .asc()
+            .orderBy()
+            .prop("n.name").asc()
+            .prop("n.age").desc()
             .returns(select("n").prop("name")).limit(1).asString();
-        Assertions.assertEquals("MATCH (n:Name {name: 'Fred'}) WITH n ORDER BY n.name ASC RETURN n.name LIMIT 1", s);
+        Assertions.assertEquals("MATCH (n:Name {name: 'Fred'}) WITH n ORDER BY n.age ASC WITH n ORDER BY n.name ASC, n.age DESC RETURN n.name LIMIT 1", s);
     }
 
     @Test
@@ -419,12 +423,15 @@ class ClauseBuilderTest {
             .merge((node("y:Year").props("year", "event.year")))
             .merge(node("y").left().rel(":IN").to("e:Event").props("id", "event.id"))
             .returns("e.id")
-            .orderBy("x").asString();
+            .orderBy()
+                .prop("x").asc()
+                .prop(select("x").prop("age")).desc()
+            .asString();
 
         Assertions.assertEquals("UNWIND [a, b, c] AS event MERGE (y:Year {year: event.year}) " +
             "MERGE (y)<-[:IN]-(e:Event {id: event.id}) " +
             "RETURN e.id " +
-            "ORDER BY x ASC", s);
+            "ORDER BY x ASC, x.age DESC", s);
     }
 
     @Test
@@ -448,12 +455,12 @@ class ClauseBuilderTest {
             .merge((node("y:Year").props("year", "event.year")))
             .merge(node("y").left().rel(":IN").to("e:Event").props("id", "event.id"))
             .returns("e.id").as("x")
-            .orderBy("x").desc().asString();
+            .orderBy("x").asString();
 
         Assertions.assertEquals("MATCH (s) UNWIND [a, [d, e], c] AS event MERGE (y:Year {year: event.year}) " +
             "MERGE (y)<-[:IN]-(e:Event {id: event.id}) " +
             "RETURN e.id AS x " +
-            "ORDER BY x DESC", s);
+            "ORDER BY x ASC", s);
     }
 
     @Test

@@ -18,6 +18,10 @@ public final class StringUtils {
         return String.join(", ", StringUtils.asString(t));
     }
 
+    public static <T extends AsString> String join(final Collection<T> t) {
+        return String.join(", ", StringUtils.asString(t));
+    }
+
     public static <T extends AsString> String join(final T[] t) {
         return StringUtils.join(t, ", ");
     }

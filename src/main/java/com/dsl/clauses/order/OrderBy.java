@@ -6,4 +6,6 @@ public interface OrderBy<T> {
     T orderBy(String... properties);
 
     T orderBy(Property... properties);
+
+    AfterOrderByNoProp<T> orderBy();
 }
