@@ -219,8 +219,9 @@ class ClauseBuilderTest {
             .with()
             .select("n")
             .orderBy("n.name")
+            .asc()
             .returns(select("n").prop("name")).limit(1).asString();
-        Assertions.assertEquals("MATCH (n:Name {name: 'Fred'}) WITH n ORDER BY n.name RETURN n.name LIMIT 1", s);
+        Assertions.assertEquals("MATCH (n:Name {name: 'Fred'}) WITH n ORDER BY n.name ASC RETURN n.name LIMIT 1", s);
     }
 
     @Test
@@ -230,8 +231,10 @@ class ClauseBuilderTest {
             .with()
             .select(select("n"))
             .orderBy(select("n").prop("name"))
-            .returns(select("n").prop("name")).orderBy("n.name").limit(1).asString();
-        Assertions.assertEquals("MATCH (n:Name {name: 'Fred'}) WITH n ORDER BY n.name RETURN n.name ORDER BY n.name LIMIT 1", s);
+            .returns(select("n").prop("name"))
+            .orderBy("n.name")
+            .limit(1).asString();
+        Assertions.assertEquals("MATCH (n:Name {name: 'Fred'}) WITH n ORDER BY n.name ASC RETURN n.name ORDER BY n.name ASC LIMIT 1", s);
     }
 
     // SKIP
@@ -407,7 +410,7 @@ class ClauseBuilderTest {
         Assertions.assertEquals("UNWIND $events AS event MERGE (y:Year {year: event.year}) " +
             "MERGE (y)<-[:IN]-(e:Event {id: event.id}) " +
             "RETURN e.id " +
-            "ORDER BY x", s);
+            "ORDER BY x ASC", s);
     }
 
     @Test
@@ -421,7 +424,7 @@ class ClauseBuilderTest {
         Assertions.assertEquals("UNWIND [a, b, c] AS event MERGE (y:Year {year: event.year}) " +
             "MERGE (y)<-[:IN]-(e:Event {id: event.id}) " +
             "RETURN e.id " +
-            "ORDER BY x", s);
+            "ORDER BY x ASC", s);
     }
 
     @Test
@@ -435,7 +438,7 @@ class ClauseBuilderTest {
         Assertions.assertEquals("UNWIND [a, [d, e], c] AS event MERGE (y:Year {year: event.year}) " +
             "MERGE (y)<-[:IN]-(e:Event {id: event.id}) " +
             "RETURN e.id AS x " +
-            "ORDER BY x", s);
+            "ORDER BY x ASC", s);
     }
 
     @Test
@@ -445,12 +448,12 @@ class ClauseBuilderTest {
             .merge((node("y:Year").props("year", "event.year")))
             .merge(node("y").left().rel(":IN").to("e:Event").props("id", "event.id"))
             .returns("e.id").as("x")
-            .orderBy("x").asString();
+            .orderBy("x").desc().asString();
 
         Assertions.assertEquals("MATCH (s) UNWIND [a, [d, e], c] AS event MERGE (y:Year {year: event.year}) " +
             "MERGE (y)<-[:IN]-(e:Event {id: event.id}) " +
             "RETURN e.id AS x " +
-            "ORDER BY x", s);
+            "ORDER BY x DESC", s);
     }
 
     @Test
@@ -465,7 +468,7 @@ class ClauseBuilderTest {
         Assertions.assertEquals("MATCH (s) UNWIND $events AS event MERGE (y:Year {year: event.year}) " +
             "MERGE (y)<-[:IN]-(e:Event {id: event.id}) " +
             "RETURN e.id " +
-            "ORDER BY x", s);
+            "ORDER BY x ASC", s);
     }
 
     @Test

@@ -9,6 +9,7 @@ import com.dsl.expressions.param.Property;
  */
 public class OrderByClause implements Clause {
     private final Property[] properties;
+    private OrderByDirection orderByDirection = OrderByDirection.ASC;
 
     public OrderByClause(String... properties) {
         this.properties = new Property[properties.length];
@@ -21,8 +22,12 @@ public class OrderByClause implements Clause {
         this.properties = properties;
     }
 
+    public void setOrderByDirection(final OrderByDirection orderByDirection) {
+        this.orderByDirection = orderByDirection;
+    }
+
     @Override
     public String asString() {
-        return String.format("ORDER BY %s", StringUtils.join(properties));
+        return String.format("ORDER BY %s %s", StringUtils.join(properties), orderByDirection.toString());
     }
 }
