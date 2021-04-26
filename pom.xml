@@ -35,7 +35,7 @@
     <junit.version>5.6.0</junit.version>
     <jacoco-maven-plugin.version>0.8.5</jacoco-maven-plugin.version>
     <maven-checkstyle-plugin.version>3.1.1</maven-checkstyle-plugin.version>
-    <checkstyle.version>8.33</checkstyle.version>
+    <checkstyle.version>8.42</checkstyle.version>
   </properties>
   <build>
     <pluginManagement>
